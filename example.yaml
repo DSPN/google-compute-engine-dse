@@ -1,0 +1,21 @@
+# Import all templates used in deployment
+imports:
+- path: ha-service.py
+- path: service.py
+- path: container_helper.py
+- path: container_instance_template.py
+- path: lb-l3.py
+
+# Declare all resources. In this case, one highly available service
+# as defined in the ha-service.py template.
+resources:
+- name: cjchasvc
+  type: ha-service.py
+  properties:
+    image: vaikas/nodejsservicestatic
+    minSize: 3
+    maxSize: 10
+    port: 8080
+    zones:
+    - asia-east1-a
+    - asia-east1-b
