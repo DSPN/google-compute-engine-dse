@@ -18,4 +18,5 @@ resources:
     port: 8080
     zones:
     - asia-east1-a
-    - asia-east1-b
+    - us-central1-f
+    - europe-west1-d
