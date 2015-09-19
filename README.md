@@ -1,3 +1,3 @@
 # google-cloud-platform
-Scripts for deploying on GCP
+These are scripts for deploying on GCP.  They deploy nodes, but are incomplete.
 
