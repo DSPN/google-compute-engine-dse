@@ -1,0 +1,80 @@
+# Copyright 2015 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# instance_metadata.jinja
+#
+# Provides a macro that expands to a simple startup script for all instances.
+# The startup script simply downloads and runs a startup script stored in GCS.
+#
+# Why not just use a startup-script-url?
+# It has been observed that on f1-micro instances, the default download
+# functionality (10 retries) on GCE is insufficient.
+#
+# This script intentionally sets no limit on the number of retries.
+# There is no obvious benefit to giving up.
+
+{#
+  startup_script_code
+
+  STOP STOP STOP
+  This is not the macro you are looking for.  Use startup_script_value below,
+  which will indent the code properly for YAML.
+
+  The pipe symbol on the first line allows for the subsequent text block to be
+  treated as a single multi-line value.  Newlines are preserved in the
+  expansion.  See http://www.yaml.org/spec/1.2/spec.html#id2795688
+#}
+{% macro startup_script_code(startupScriptUrl) -%}
+|
+readonly STARTUP_SCRIPT_URL={{ startupScriptUrl }}
+while ! curl -o /tmp/startup-script.sh ${STARTUP_SCRIPT_URL}; do
+  echo "c2d-StatusUpdate: Failed to fetch ${STARTUP_SCRIPT_URL}"
+  echo "Sleep 2s"
+  sleep 2s
+done
+
+chmod 700 /tmp/startup-script.sh
+/tmp/startup-script.sh
+{%- endmacro %}
+
+{#
+  startup_script_value
+
+  Macro that can be used as the startup script value and expands into the
+  proper Click to Deploy default startup script.
+
+  Example usage:
+
+     metadata:
+       items:
+       - key: startup-script
+         value: {{ instance_metadata.startup_script_value() }}
+
+  Expands to:
+
+     metadata:
+       items:
+       - key: startup-script
+         value: |
+           readonly STARTUP_SCRIPT_URL=...
+           while ! curl -o /tmp/startup-script.sh ${STARTUP_SCRIPT_URL}; do
+           <etc>
+#}
+{% macro startup_script_value(startupScriptUrl, spaces=10) -%}
+{{ startup_script_code(startupScriptUrl)|indent(spaces) }}
+{%- endmacro %}
+
+{% macro deployInstallTemp(package) -%}
+{{ "/tmp/%s_install"|format(package) }}
+{%- endmacro %}

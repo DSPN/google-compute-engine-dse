@@ -1,0 +1,21 @@
+imports:
+  - path: vm_instance.py
+  - path: vm_multiple_instances.py
+  - path: common.py
+  - path: default.py
+  - path: regional_multi_vm.py
+  - path: datastax.py
+
+resources:
+- name: datastax
+  type: datastax.py
+  properties:
+    zones:
+    - us-central1-a
+    - europe-west1-b
+    - asia-east1-a
+    machineType: n1-standard-1
+    nodesPerZone: 3
+    diskSize: 10
+    opsCenterZone: us-central1-a
+
