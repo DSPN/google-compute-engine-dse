@@ -2,7 +2,6 @@ import yaml
 
 
 def GenerateFirewall(context):
-    """Generates a firewall"""
     name = 'opscenterfirewall-' + context.env['name']
     firewalls = [
         {
@@ -24,7 +23,6 @@ def GenerateFirewall(context):
 
 
 def GenerateConfig(context):
-    # YAML config.
     config = {'resources': []}
 
     zonal_clusters = {
@@ -54,13 +52,13 @@ def GenerateConfig(context):
                     {
                         'key': 'startup-script',
                         'value': '''|
-                            #!/bin/bash
-                            mkdir -p /mnt/data
-                            chmod 777 /mnt/data
-                            /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt/data
-                            apt-get update
-                            apt-get install openjdk-7-jdk -yqq
-                            '''
+    #!/bin/bash
+    mkdir -p /mnt/data
+    chmod 777 /mnt/data
+    /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt/data
+    apt-get update
+    apt-get install openjdk-7-jdk -yqq
+                        '''
                     }
                 ]
             }
@@ -81,21 +79,21 @@ def GenerateConfig(context):
                     {
                         'key': 'startup-script',
                         'value': '''|
-                            #! /bin/bash
-                            apt-get update
-                            apt-get install openjdk-7-jdk -yqq
+    #! /bin/bash
+    apt-get update
+    apt-get install openjdk-7-jdk -yqq
 
-                            echo "Installing OpsCenter"
-                            echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
-                            curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
-                            apt-get -y install opscenter=5.2.1
+    echo "Installing OpsCenter"
+    echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
+    curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
+    apt-get -y install opscenter=5.2.1
 
-                            echo "Starting OpsCenter"
-                            sudo service opscenterd start
+    echo "Starting OpsCenter"
+    sudo service opscenterd start
 
-                            echo "Waiting for OpsCenter to start..."
-                            sleep 15
-                            '''
+    echo "Waiting for OpsCenter to start..."
+    sleep 15
+                        '''
                     }
                 ]
             }
