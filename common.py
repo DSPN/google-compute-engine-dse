@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generic simple functions used for python based templage generation."""
+"""Generic simple functions used for python based template generation."""
 
 import re
 import sys
