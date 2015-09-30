@@ -6,7 +6,6 @@ def GenerateFirewall(context):
     name = 'opscenterfirewall-' + context.env['name']
     prop = context.properties
     firewalls = []
-    # pyformat: disable
     firewalls.append({
         'name': name,
         'type': 'compute.v1.firewall',
@@ -20,7 +19,7 @@ def GenerateFirewall(context):
             }]
         }
     })
-    # pyformat: enable
+
     return firewalls
 
 

@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Creates an Instance VM with common defaults."""
-import copy
 
+"""Creates an Instance VM with common defaults."""
+
+import copy
 import common
 import default
 

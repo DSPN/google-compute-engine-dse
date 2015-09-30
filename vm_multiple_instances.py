@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Creates multiple copies of a VM based on spec."""
-import copy
 
+"""Creates multiple copies of a VM based on spec."""
+
+import copy
 import common
 import default
 import vm_instance
