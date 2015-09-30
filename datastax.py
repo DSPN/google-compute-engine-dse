@@ -4,21 +4,21 @@ import yaml
 def GenerateFirewall(context):
     """Generates a firewall"""
     name = 'opscenterfirewall-' + context.env['name']
-    prop = context.properties
-    firewalls = []
-    firewalls.append({
-        'name': name,
-        'type': 'compute.v1.firewall',
-        'properties': {
-            'sourceRanges': [
-                '0.0.0.0/0'
-            ],
-            'allowed': [{
-                'IPProtocol': 'tcp',
-                'ports': ['8888', '8443']
-            }]
+    firewalls = [
+        {
+            'name': name,
+            'type': 'compute.v1.firewall',
+            'properties': {
+                'sourceRanges': [
+                    '0.0.0.0/0'
+                ],
+                'allowed': [{
+                    'IPProtocol': 'tcp',
+                    'ports': ['8888', '8443']
+                }]
+            }
         }
-    })
+    ]
 
     return firewalls
 

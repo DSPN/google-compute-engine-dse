@@ -27,7 +27,7 @@ except ImportError:
     import google3
     import yaml
 
-RFC1035_RE = re.compile(r'^[a-z][-a-z0-9]{1,61}[a-z0-9]{1}$')
+RFC1035_RE = re.compile(r'^[a-z][-a-z0-9]{1,61}[a-z0-9]$')
 
 
 class Error(Exception):
