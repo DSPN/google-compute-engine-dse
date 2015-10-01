@@ -12,7 +12,7 @@ def GenerateConfig(context):
         new_properties["zone"] = zone
         service = {
             'name': context.env['deployment'] + '-service-' + zone,
-            'type': 'vm_multiple_instances.py',
+            'type': 'gcp.vm_multiple_instances.py',
             'properties': new_properties
         }
 
