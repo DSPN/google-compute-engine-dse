@@ -1,4 +1,5 @@
 #!/bin/sh
 
-# This line isn't correct...
-gcloud deploy datastax.yaml
+DEPLOYMENT_NAME=$1
+gcloud deployment-manager deployments create $DEPLOYMENT_NAME --config clusterParameters.yaml
+
