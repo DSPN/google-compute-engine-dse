@@ -51,14 +51,14 @@ def GenerateConfig(context):
                 'items': [
                     {
                         'key': 'startup-script',
-                        'value': '''|
-    #!/bin/bash
-    mkdir -p /mnt/data
-    chmod 777 /mnt/data
-    /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt/data
-    apt-get update
-    apt-get install openjdk-7-jdk -yqq
-                        '''
+                        'value': '''
+                          #!/bin/bash
+                          mkdir -p /mnt/data
+                          chmod 777 /mnt/data
+                          /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt/data
+                          apt-get update
+                          apt-get install openjdk-7-jdk -yqq
+                          '''
                     }
                 ]
             }
@@ -74,26 +74,33 @@ def GenerateConfig(context):
             'machineType': context.properties['machineType'],
             'network': 'default',
             'bootDiskType': 'pd-standard',
+            'serviceAccounts': [{
+              'email': 'default',
+              'scopes': [ 'https://www.googleapis.com/auth/compute' ]
+            }],
             'metadata': {
                 'items': [
                     {
                         'key': 'startup-script',
-                        'value': '''|
-    #! /bin/bash
-    apt-get update
-    apt-get install openjdk-7-jdk -yqq
+                        'value': '''
+                          #! /bin/bash
+                          ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
+                          echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
+                          gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
+                          apt-get update
+                          apt-get install openjdk-7-jdk -yqq
 
-    echo "Installing OpsCenter"
-    echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
-    curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
-    apt-get -y install opscenter=5.2.1
+                          echo "Installing OpsCenter"
+                          echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
+                          curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
+                          apt-get -y install opscenter=5.2.1
 
-    echo "Starting OpsCenter"
-    sudo service opscenterd start
+                          echo "Starting OpsCenter"
+                          sudo service opscenterd start
 
-    echo "Waiting for OpsCenter to start..."
-    sleep 15
-                        '''
+                          echo "Waiting for OpsCenter to start..."
+                          sleep 15
+                          '''
                     }
                 ]
             }
