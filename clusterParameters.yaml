@@ -1,8 +1,12 @@
 imports:
   - path: gcp/common.py
+    name: common.py
   - path: gcp/default.py
+    name: default.py
   - path: gcp/vm_instance.py
+    name: vm_instance.py
   - path: gcp/vm_multiple_instances.py
+    name: vm_multiple_instances.py
   - path: datastax.py
   - path: regional_multi_vm.py
 

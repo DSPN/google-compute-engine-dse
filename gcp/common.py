@@ -18,14 +18,7 @@ import re
 import sys
 import traceback
 import default
-
-# This is just so this file can also be used in tests
-# pylint: disable=g-import-not-at-top
-try:
-    import yaml
-except ImportError:
-    import google3
-    import yaml
+import yaml
 
 RFC1035_RE = re.compile(r'^[a-z][-a-z0-9]{1,61}[a-z0-9]$')
 
