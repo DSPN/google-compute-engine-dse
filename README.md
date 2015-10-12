@@ -1,4 +1,6 @@
-# sandbox
+# google-cloud-platform-dse
 
-These are scripts for generating a single node DataStax sandbox instance that can be provisioned from the Google Marketplace.
+cluster is a GCP template to deploy a DataStax Enterprise cluster running on GCP.
+
+sandbox is script and config files for a single node DataStax instance.  This is intended to be deployed from the Google Marketplace.
 
