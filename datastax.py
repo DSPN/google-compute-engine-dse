@@ -29,7 +29,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1410-utopic-v20150625',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1504-vivid-v20150911',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': 'default',
@@ -69,7 +69,7 @@ def GenerateConfig(context):
         'name': 'opscenter-' + context.env['name'],
         'type': 'vm_instance.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1410-utopic-v20150625',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1504-vivid-v20150911',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': 'default',
