@@ -3,7 +3,6 @@ import copy
 
 
 def GenerateConfig(context):
-    # YAML config.
     config = {'resources': []}
 
     # A zonal vm_multiple_instances resource for each zone in the properties list.
