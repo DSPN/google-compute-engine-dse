@@ -8,7 +8,11 @@ def run():
     deploymentName = sys.argv[1]
     regions = json.loads(base64.b64decode(sys.argv[2]))
     nodesPerRegion = int(sys.argv[3])
-    sshkey = sys.argv[4]
+
+    # this is terrible, but the newlines are causing the key to be truncated
+    file = open('/tmp/sshkey', 'r')
+    sshkey=file.read()
+    file.close()
 
     document = generateDocument(deploymentName, sshkey, regions, nodesPerRegion)
 
