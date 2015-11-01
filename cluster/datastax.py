@@ -65,6 +65,42 @@ def GenerateConfig(context):
         }
     }
 
+    ops_center_script = '''
+    #! /bin/bash
+    ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
+    echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
+    gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
+    apt-get update
+    apt-get install openjdk-7-jdk -yqq
+
+    echo "Installing OpsCenter"
+    echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
+    curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
+    apt-get update
+    apt-get -y install opscenter=5.2.1
+
+    echo "Starting OpsCenter"
+    sudo service opscenterd start
+
+    echo "Waiting for OpsCenter to start..."
+    sleep 15
+
+    wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/cluster/provision/opsCenter.py
+
+    echo "Generating a provision.json file"
+    python opsCenter.py '''
+
+    # parameters go here
+    ops_center_script += context.env['name'] + ' '
+    ops_center_script += context.properties['zones'] + ' '
+    ops_center_script += context.properties['nodesPerZone'] + ' '
+    ops_center_script += '`cat /tmp/sshkey.pub`'
+
+    ops_center_script += '''
+    echo "Provisioning a new cluster using provision.json"
+    curl --insecure -H "Accept: application/json" -X POST http://127.0.0.1:8888/provision -d @provision.json
+    '''
+
     ops_center_node = {
         'name': 'opscenter-' + context.env['name'],
         'type': 'vm_instance.py',
@@ -75,41 +111,14 @@ def GenerateConfig(context):
             'network': 'default',
             'bootDiskType': 'pd-standard',
             'serviceAccounts': [{
-              'email': 'default',
-              'scopes': [ 'https://www.googleapis.com/auth/compute' ]
+                'email': 'default',
+                'scopes': ['https://www.googleapis.com/auth/compute']
             }],
             'metadata': {
                 'items': [
                     {
                         'key': 'startup-script',
-                        'value': '''
-                          #! /bin/bash
-                          ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
-                          echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
-                          gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
-                          apt-get update
-                          apt-get install openjdk-7-jdk -yqq
-
-                          echo "Installing OpsCenter"
-                          echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
-                          curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
-                          apt-get update
-                          apt-get -y install opscenter=5.2.1
-
-                          echo "Starting OpsCenter"
-                          sudo service opscenterd start
-
-                          echo "Waiting for OpsCenter to start..."
-                          sleep 15
-
-                          wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/cluster/provision/opsCenter.py
-
-                          echo "Generating a provision.json file"
-                          python opsCenter.py needToPassNodeInfoHere
-
-                          echo "Provisioning a new cluster using provision.json"
-                          curl --insecure -H "Accept: application/json" -X POST http://127.0.0.1:8888/provision -d @provision.json
-                          '''
+                        'value': ops_center_script
                     }
                 ]
             }
