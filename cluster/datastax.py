@@ -96,7 +96,7 @@ def GenerateConfig(context):
     ops_center_script += base64.b64encode(json.dumps(context.properties['zones'])) + ' '
 
     ops_center_script += str(context.properties['nodesPerZone']) + ' '
-    ops_center_script += '`cat /tmp/sshkey.pub`'
+    ops_center_script += '`cat /tmp/sshkey`'
 
     ops_center_script += '''
     echo "Provisioning a new cluster using provision.json"
