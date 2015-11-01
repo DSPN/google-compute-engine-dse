@@ -92,8 +92,8 @@ def GenerateConfig(context):
 
     # parameters go here
     ops_center_script += context.env['name'] + ' '
-    ops_center_script += context.properties['zones'] + ' '
-    ops_center_script += context.properties['nodesPerZone'] + ' '
+    ops_center_script += str(context.properties['zones']) + ' '
+    ops_center_script += str(context.properties['nodesPerZone']) + ' '
     ops_center_script += '`cat /tmp/sshkey.pub`'
 
     ops_center_script += '''
