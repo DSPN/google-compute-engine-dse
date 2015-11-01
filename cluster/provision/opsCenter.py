@@ -16,11 +16,12 @@ def run():
         json.dump(document, outputFile, sort_keys=True, indent=4, ensure_ascii=False)
 
 
-def getNodeInformation(datacenterIndex, numberOfNodes):
+def getNodeInformation(deploymentName, region, numberOfNodes):
     nodeInformation = []
 
     for nodeIndex in range(0, numberOfNodes):
-        nodeIP = '10.' + str(datacenterIndex) + '.1.' + str(nodeIndex + 5)
+        nodeName = deploymentName + '-service' + region + '-' + nodeIndex + '-vm'
+        nodeIP = nodeName
         document = {
             "public_ip": nodeIP,
             "private_ip": nodeIP,
@@ -31,14 +32,13 @@ def getNodeInformation(datacenterIndex, numberOfNodes):
     return nodeInformation
 
 
-def getLocalDataCenters(regions, nodesPerRegion):
+def getLocalDataCenters(deploymentName, regions, nodesPerRegion):
     localDataCenters = []
     for region in regions:
-        datacenterIndex = regions.index(region) + 1
         localDataCenter = {
             "location": region,
-            "node_information": getNodeInformation(datacenterIndex, nodesPerRegion),
-            "dc": region.replace(" ", "_").lower()
+            "node_information": getNodeInformation(deploymentName, region, nodesPerRegion),
+            "dc": region
         }
         localDataCenters.append(localDataCenter)
     return localDataCenters
@@ -55,7 +55,7 @@ def getFingerprint(ip):
     return fingerprint
 
 
-def getAcceptedFingerprints(regions, nodesPerRegion):
+def getAcceptedFingerprints(deploymentName, regions, nodesPerRegion):
     acceptedFingerprints = {}
     for region in regions:
         datacenterIndex = regions.index(region) + 1
@@ -67,8 +67,8 @@ def getAcceptedFingerprints(regions, nodesPerRegion):
 
 
 def generateDocument(deploymentName, sshkey, regions, nodesPerRegion):
-    localDataCenters = getLocalDataCenters(regions, nodesPerRegion)
-    acceptedFingerprints = getAcceptedFingerprints(regions, nodesPerRegion)
+    localDataCenters = getLocalDataCenters(deploymentName, regions, nodesPerRegion)
+    acceptedFingerprints = getAcceptedFingerprints(deploymentName, regions, nodesPerRegion)
 
     return {
         "cassandra_config": {
