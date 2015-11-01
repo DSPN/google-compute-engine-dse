@@ -54,9 +54,9 @@ def GenerateConfig(context):
                         'key': 'startup-script',
                         'value': '''
                           #!/bin/bash
-                          mkdir -p /mnt/data
-                          chmod 777 /mnt -R
-                          /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt/data
+                          mkdir /mnt
+                          chmod 777 /mnt
+                          /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
                           apt-get update
                           apt-get install openjdk-7-jdk -yqq
                           '''
