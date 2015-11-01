@@ -58,9 +58,9 @@ def getFingerprint(ip):
 def getAcceptedFingerprints(deploymentName, regions, nodesPerRegion):
     acceptedFingerprints = {}
     for region in regions:
-        datacenterIndex = regions.index(region) + 1
-        for nodeIndex in range(0, nodesPerRegion):
-            nodeIP = '10.' + str(datacenterIndex) + '.1.' + str(nodeIndex + 5)
+        for nodeIndex in range(1, nodesPerRegion+1):
+            nodeName = deploymentName + '-service-' + region + '-' + str(nodeIndex) + '-vm'
+            nodeIP = nodeName
             acceptedFingerprints[nodeIP] = getFingerprint(nodeIP)
 
     return acceptedFingerprints
@@ -68,8 +68,7 @@ def getAcceptedFingerprints(deploymentName, regions, nodesPerRegion):
 
 def generateDocument(deploymentName, sshkey, regions, nodesPerRegion):
     localDataCenters = getLocalDataCenters(deploymentName, regions, nodesPerRegion)
-    acceptedFingerprints = {}
-    #acceptedFingerprints = getAcceptedFingerprints(deploymentName, regions, nodesPerRegion)
+    acceptedFingerprints = getAcceptedFingerprints(deploymentName, regions, nodesPerRegion)
 
     return {
         "cassandra_config": {
