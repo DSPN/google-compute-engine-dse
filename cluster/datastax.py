@@ -55,8 +55,8 @@ def GenerateConfig(context):
                         'value': '''
                           #!/bin/bash
                           mkdir /mnt
-                          chmod 777 /mnt
                           /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
+                          chmod 777 /mnt
                           apt-get update
                           apt-get install openjdk-7-jdk -yqq
                           '''
