@@ -6,7 +6,7 @@ import base64
 
 def run():
     deploymentName = sys.argv[1]
-    regions = sys.argv[2]
+    regions = json.loads(base64.b64decode(sys.argv[2]))
     nodesPerRegion = int(sys.argv[3])
     sshkey = sys.argv[4]
 

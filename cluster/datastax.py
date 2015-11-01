@@ -1,5 +1,6 @@
 import yaml
-
+import base64
+import json
 
 def GenerateFirewall(context):
     name = 'opscenterfirewall-' + context.env['name']
@@ -93,7 +94,8 @@ def GenerateConfig(context):
     # parameters go here
     ops_center_script += 'ben1' + ' '
     ops_center_script += str(context.properties['zones']) + ' '
-    ops_center_script += str(context.properties['nodesPerZone']) + ' '
+
+    ops_center_script += base64.b64encode(json.dumps(context.properties['nodesPerZone'])) + ' '
     ops_center_script += '`cat /tmp/sshkey.pub`'
 
     ops_center_script += '''
