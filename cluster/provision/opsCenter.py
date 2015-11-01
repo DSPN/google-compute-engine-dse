@@ -5,17 +5,13 @@ import base64
 
 
 def run():
-    if len(sys.argv) != 2:
-        print("I need an argument.")
-        exit(1)
+    name = sys.argv[1]
+    regions = sys.argv[2]
+    nodesPerRegion = sys.argv[3]
+    sshkey = sys.argv[4]
+    username = "root"
 
-    clusterParameters = json.loads(base64.b64decode(sys.argv[1]))
-    regions = clusterParameters['regions']
-    nodesPerRegion = clusterParameters['nodesPerRegion']
-    username = clusterParameters['username']
-    password = clusterParameters['password']
-
-    document = generateDocument(username, password, regions, nodesPerRegion)
+    document = generateDocument(username, sshkey, regions, nodesPerRegion)
 
     with open('provision.json', 'w') as outputFile:
         json.dump(document, outputFile, sort_keys=True, indent=4, ensure_ascii=False)
@@ -71,7 +67,7 @@ def getAcceptedFingerprints(regions, nodesPerRegion):
     return acceptedFingerprints
 
 
-def generateDocument(username, password, regions, nodesPerRegion):
+def generateDocument(username, sshkey, regions, nodesPerRegion):
     localDataCenters = getLocalDataCenters(regions, nodesPerRegion)
     acceptedFingerprints = getAcceptedFingerprints(regions, nodesPerRegion)
 
@@ -194,8 +190,8 @@ def generateDocument(username, password, regions, nodesPerRegion):
         "is_retry": False,
         "install_params": {
             "package": "dse",
-            "private_key": "",
-            "password": password,
+            "private_key": sshkey,
+            "password": "",
             "username": username,
             "version": "4.8.0",
             "repo-password": "3A7vadPHbNT",
