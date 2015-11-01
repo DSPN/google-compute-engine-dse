@@ -2,7 +2,7 @@ import json
 import os
 import sys
 import base64
-
+import socket
 
 def run():
     deploymentName = sys.argv[1]
@@ -21,7 +21,7 @@ def getNodeInformation(deploymentName, region, numberOfNodes):
 
     for nodeIndex in range(1, numberOfNodes+1):
         nodeName = deploymentName + '-service-' + region + '-' + str(nodeIndex) + '-vm'
-        nodeIP = nodeName
+        nodeIP = socket.gethostbyname_ex(nodeName)[2][0]
         document = {
             "public_ip": nodeIP,
             "private_ip": nodeIP,
@@ -60,7 +60,7 @@ def getAcceptedFingerprints(deploymentName, regions, nodesPerRegion):
     for region in regions:
         for nodeIndex in range(1, nodesPerRegion+1):
             nodeName = deploymentName + '-service-' + region + '-' + str(nodeIndex) + '-vm'
-            nodeIP = nodeName
+            nodeIP = socket.gethostbyname_ex(nodeName)[2][0]
             acceptedFingerprints[nodeIP] = getFingerprint(nodeIP)
 
     return acceptedFingerprints
