@@ -20,7 +20,7 @@ def getNodeInformation(deploymentName, region, numberOfNodes):
     nodeInformation = []
 
     for nodeIndex in range(1, numberOfNodes+1):
-        nodeName = deploymentName + '-service' + region + '-' + str(nodeIndex) + '-vm'
+        nodeName = deploymentName + '-service-' + region + '-' + str(nodeIndex) + '-vm'
         nodeIP = nodeName
         document = {
             "public_ip": nodeIP,
