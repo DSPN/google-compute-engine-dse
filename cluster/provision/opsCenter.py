@@ -5,13 +5,12 @@ import base64
 
 
 def run():
-    name = sys.argv[1]
+    deploymentName = sys.argv[1]
     regions = sys.argv[2]
-    nodesPerRegion = sys.argv[3]
+    nodesPerRegion = int(sys.argv[3])
     sshkey = sys.argv[4]
-    username = "root"
 
-    document = generateDocument(username, sshkey, regions, nodesPerRegion)
+    document = generateDocument(deploymentName, sshkey, regions, nodesPerRegion)
 
     with open('provision.json', 'w') as outputFile:
         json.dump(document, outputFile, sort_keys=True, indent=4, ensure_ascii=False)
@@ -67,7 +66,7 @@ def getAcceptedFingerprints(regions, nodesPerRegion):
     return acceptedFingerprints
 
 
-def generateDocument(username, sshkey, regions, nodesPerRegion):
+def generateDocument(deploymentName, sshkey, regions, nodesPerRegion):
     localDataCenters = getLocalDataCenters(regions, nodesPerRegion)
     acceptedFingerprints = getAcceptedFingerprints(regions, nodesPerRegion)
 
@@ -192,7 +191,7 @@ def generateDocument(username, sshkey, regions, nodesPerRegion):
             "package": "dse",
             "private_key": sshkey,
             "password": "",
-            "username": username,
+            "username": "root",
             "version": "4.8.0",
             "repo-password": "3A7vadPHbNT",
             "repo-user": "datastax%40microsoft.com"
