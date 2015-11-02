@@ -95,7 +95,7 @@ def GenerateConfig(context):
     python opsCenter.py '''
 
     # parameters go here
-    ops_center_script += 'ben1' + ' '
+    ops_center_script += context.env['deployment'] + ' '
     ops_center_script += base64.b64encode(json.dumps(context.properties['zones'])) + ' '
     ops_center_script += str(context.properties['nodesPerZone'])
 
