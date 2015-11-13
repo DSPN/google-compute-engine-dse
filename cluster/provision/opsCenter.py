@@ -196,7 +196,7 @@ def generateDocument(deploymentName, sshkey, regions, nodesPerRegion):
             "private_key": sshkey,
             "password": "",
             "username": "root",
-            "version": "4.7.3",
+            "version": "4.8.0",
             "repo-password": "3A7vadPHbNT",
             "repo-user": "datastax%40microsoft.com"
         },
