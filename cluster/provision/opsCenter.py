@@ -197,8 +197,8 @@ def generateDocument(deploymentName, sshkey, regions, nodesPerRegion):
             "password": "",
             "username": "root",
             "version": "4.8.0",
-            "repo-password": "3A7vadPHbNT",
-            "repo-user": "datastax%40microsoft.com"
+            "repo-password": "8GdeeVT2s7zi",
+            "repo-user": "datastax%40google.com"
         },
         "local_datacenters": localDataCenters,
         "accepted_fingerprints": acceptedFingerprints
