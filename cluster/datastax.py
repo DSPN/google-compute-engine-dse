@@ -80,7 +80,7 @@ def GenerateConfig(context):
     apt-get update
     apt-get -y install opscenter=5.2.2
 
-    printf "\n[provisioning]\nagent_install_timeout: 300\n\n" >> /etc/opscenter/opscenterd.conf
+    printf "\n[provisioning]\nagent_install_timeout: 3600\n\n" >> /etc/opscenter/opscenterd.conf
 
     echo "Starting OpsCenter"
     sudo service opscenterd start
