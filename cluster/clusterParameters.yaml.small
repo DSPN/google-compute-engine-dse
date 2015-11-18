@@ -19,6 +19,7 @@ resources:
     - europe-west1-b
     - asia-east1-a
     machineType: n1-standard-1
-    nodesPerZone: 10
+    nodesPerZone: 3
+    nodeType: spark
     diskSize: 10
     opsCenterZone: us-central1-a

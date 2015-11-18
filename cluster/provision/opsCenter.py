@@ -8,19 +8,20 @@ def run():
     deploymentName = sys.argv[1]
     regions = json.loads(base64.b64decode(sys.argv[2]))
     nodesPerRegion = int(sys.argv[3])
+    nodeType = sys.argv[4]
 
     # this is terrible, but the newlines are causing the key to be truncated
     file = open('/tmp/sshkey', 'r')
     sshkey=file.read()
     file.close()
 
-    document = generateDocument(deploymentName, sshkey, regions, nodesPerRegion)
+    document = generateDocument(deploymentName, sshkey, regions, nodesPerRegion, nodeType)
 
     with open('provision.json', 'w') as outputFile:
         json.dump(document, outputFile, sort_keys=True, indent=4, ensure_ascii=False)
 
 
-def getNodeInformation(deploymentName, region, numberOfNodes):
+def getNodeInformation(deploymentName, region, numberOfNodes, nodeType):
     nodeInformation = []
 
     for nodeIndex in range(1, numberOfNodes+1):
@@ -29,19 +30,19 @@ def getNodeInformation(deploymentName, region, numberOfNodes):
         document = {
             "public_ip": nodeIP,
             "private_ip": nodeIP,
-            "node_type": "cassandra",
+            "node_type": nodeType,
             "rack": "rack1"
         }
         nodeInformation.append(document)
     return nodeInformation
 
 
-def getLocalDataCenters(deploymentName, regions, nodesPerRegion):
+def getLocalDataCenters(deploymentName, regions, nodesPerRegion, nodeType):
     localDataCenters = []
     for region in regions:
         localDataCenter = {
             "location": region,
-            "node_information": getNodeInformation(deploymentName, region, nodesPerRegion),
+            "node_information": getNodeInformation(deploymentName, region, nodesPerRegion, nodeType),
             "dc": region
         }
         localDataCenters.append(localDataCenter)
@@ -70,8 +71,8 @@ def getAcceptedFingerprints(deploymentName, regions, nodesPerRegion):
     return acceptedFingerprints
 
 
-def generateDocument(deploymentName, sshkey, regions, nodesPerRegion):
-    localDataCenters = getLocalDataCenters(deploymentName, regions, nodesPerRegion)
+def generateDocument(deploymentName, sshkey, regions, nodesPerRegion, nodeType):
+    localDataCenters = getLocalDataCenters(deploymentName, regions, nodesPerRegion, nodeType)
     acceptedFingerprints = getAcceptedFingerprints(deploymentName, regions, nodesPerRegion)
 
     return {

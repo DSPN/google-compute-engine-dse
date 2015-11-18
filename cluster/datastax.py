@@ -99,7 +99,8 @@ def GenerateConfig(context):
     # parameters go here
     ops_center_script += context.env['deployment'] + ' '
     ops_center_script += base64.b64encode(json.dumps(context.properties['zones'])) + ' '
-    ops_center_script += str(context.properties['nodesPerZone'])
+    ops_center_script += str(context.properties['nodesPerZone']) + ' '
+    ops_center_script += str(context.properties['nodeType'])
 
     ops_center_script += '''
     echo "Provisioning a new cluster using provision.json"

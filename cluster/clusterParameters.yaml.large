@@ -16,10 +16,20 @@ resources:
   properties:
     zones:
     - us-east1-b
+    - us-east1-c
+    - us-east1-d
+    - us-central1-a
+    - us-central1-b
+    - us-central1-c
+    - us-central1-f
     - europe-west1-b
+    - europe-west1-c
+    - europe-west1-d
     - asia-east1-a
+    - asia-east1-b
+    - asia-east1-c
     machineType: n1-standard-1
-    nodesPerZone: 3
+    nodesPerZone: 7
     nodeType: spark
     diskSize: 10
     opsCenterZone: us-central1-a
