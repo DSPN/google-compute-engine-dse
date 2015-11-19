@@ -2,6 +2,7 @@ import yaml
 import base64
 import json
 
+
 def GenerateFirewall(context):
     name = 'opscenterfirewall-' + context.env['name']
     firewalls = [
@@ -21,6 +22,17 @@ def GenerateFirewall(context):
     ]
 
     return firewalls
+
+
+def GenerateReferencesList(context):
+    reference_list = []
+    n_of_copies = context.properties['nodesPerZone']
+    dep_name = context.env['deployment']
+    for zone in context.properties['zones']:
+        for idx in range(1, n_of_copies + 1):
+            node_name = '$(ref.%s.selfLink)' % dep_name + '-service-' + zone + '-' + str(idx) + '-vm'
+            reference_list.append(node_name)
+    return ' '.join(reference_list)
 
 
 def GenerateConfig(context):
@@ -86,9 +98,6 @@ def GenerateConfig(context):
     echo "Waiting for OpsCenter to start..."
     sleep 15
 
-    echo "Waiting for the nodes to start..."
-    sleep 120
-
     wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/cluster/provision/opsCenter.py
 
     echo "Generating a provision.json file"
@@ -106,6 +115,7 @@ def GenerateConfig(context):
     '''
 
     ops_center_node = {
+        'references': GenerateReferencesList(context),
         'name': 'opscenter-' + context.env['name'],
         'type': 'vm_instance.py',
         'properties': {
