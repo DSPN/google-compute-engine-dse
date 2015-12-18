@@ -98,6 +98,9 @@ def GenerateConfig(context):
     echo "Waiting for OpsCenter to start..."
     sleep 15
 
+    echo "Waiting for Java to install on the nodes..."
+    sleep 120
+
     wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/cluster/provision/opsCenter.py
 
     echo "Generating a provision.json file"
