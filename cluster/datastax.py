@@ -30,7 +30,7 @@ def GenerateReferencesList(context):
     dep_name = context.env['deployment']
     for zone in context.properties['zones']:
         for idx in range(1, n_of_copies + 1):
-            node_name = '$(ref.%s.selfLink)' % dep_name + '-service-' + zone + '-' + str(idx) + '-vm'
+            node_name = '$(ref.' + dep_name + '-service-' + zone + '-' + str(idx) + '-vm' + '.selfLink)'
             reference_list.append(node_name)
     return ' '.join(reference_list)
 
