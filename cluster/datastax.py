@@ -115,7 +115,6 @@ def GenerateConfig(context):
     '''
 
     ops_center_node = {
-        'references': GenerateReferencesList(context),
         'name': 'opscenter-' + context.env['name'],
         'type': 'vm_instance.py',
         'properties': {
@@ -133,6 +132,10 @@ def GenerateConfig(context):
                     {
                         'key': 'startup-script',
                         'value': ops_center_script
+                    },
+                    {
+                        'key': 'bogus-references',
+                        'value': GenerateReferencesList(context)
                     }
                 ]
             }
