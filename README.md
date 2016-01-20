@@ -1,6 +1,5 @@
 # google-cloud-platform-dse
 
-cluster is a GCP template to deploy a DataStax Enterprise cluster running on GCP.
+The cluster folder contains a GCP template that will deploy DataStax Enterprise in an arbitrary number of data centers.
 
-sandbox is script and config files for a single node DataStax instance.  This is intended to be deployed from the Google Marketplace.
-
+metadata.json is a metadata file for a marketplace deployment of that template.

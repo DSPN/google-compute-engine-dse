@@ -14,7 +14,6 @@
                                     "ipProtocol": "tcp",
                                     "openByDefault": true,
                                     "portRanges": [
-                                        "80",
                                         "8888"
                                     ]
                                 }
@@ -46,7 +45,7 @@
             "supportInfo": "Your success is our top priority. Whether you have a new Web, mobile or IoT application in development or have database clusters already in production, we offer a wide range of support services to help ensure that our industry-leading NoSQL data management solution, DataStax Enterprise, exceeds your expectations.",
             "supportUrl": "http: //www.datastax.com/products/datastax-enterprise-expert-support",
             "url": "http: //datastax.com",
-            "version": "4.7.3"
+            "version": "4.8.1"
         },
         "partnerId": "datastax",
         "solutionId": "datastax-enterprise"
@@ -68,7 +67,7 @@
         "entries": [
             {
                 "description": "forallmachinetypes",
-                "hourlyPriceInMicros": 210000
+                "hourlyPriceInMicros": 0
             }
         ],
         "note": "Allmachinetypesarechargeda10-minuteminimum,in1-minuteincrementsafterward."
