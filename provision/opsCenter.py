@@ -197,7 +197,7 @@ def generateDocument(deploymentName, sshkey, regions, nodesPerRegion, nodeType):
             "private_key": sshkey,
             "password": "",
             "username": "root",
-            "version": "4.8.0",
+            "version": "4.8.1",
             "repo-password": "8GdeeVT2s7zi",
             "repo-user": "datastax%40google.com"
         },
