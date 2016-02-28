@@ -40,8 +40,8 @@ def GenerateConfig(context):
 
     seed_nodes_dns_names = ''
     for zone in context.properties['zones']:
-        seed_nodes_dns_names += context.env['deployment'] + '-service-' + zone + '-1-vm, '
-    seed_nodes_dns_names = seed_nodes_dns_names[:-2]
+        seed_nodes_dns_names += context.env['deployment'] + '-service-' + zone + '-1-vm,'
+    seed_nodes_dns_names = seed_nodes_dns_names[:-1]
 
     dse_node_script = '''
         #!/usr/bin/env bash
@@ -99,7 +99,7 @@ def GenerateConfig(context):
       cd install-datastax-master/bin
 
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
-      ./opscenter.sh $seed_node_public_ip
+      ./opscenter.sh $seed_nodes_dns_names
     '''
 
     ops_center_node = {
