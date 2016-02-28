@@ -65,12 +65,21 @@ def GenerateConfig(context):
                     {
                         'key': 'startup-script',
                         'value': '''
-                          #!/bin/bash
-                          mkdir /mnt
-                          /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
-                          chmod 777 /mnt
-                          apt-get update
-                          apt-get install openjdk-7-jdk -yqq
+                          #!/usr/bin/env bash
+                          cloud_type="google"
+                          data_center_name="foo"
+
+                          location=$2 #this is the location of the seed and OpsCenter, not necessarily of this node
+                          uniqueString=$3
+                          seed_node_dns_name="dc0vm0$uniqueString.$location.cloudapp.azure.com"
+                          seed_node_public_ip=`dig +short $seed_node_dns_name | awk '{ print ; exit }'`
+
+                          wget https://github.com/DSPN/install-datastax/archive/master.zip
+                          apt-get -y install unzip
+                          unzip master.zip
+                          cd install-datastax-master/bin
+
+                          ./dse.sh $cloud_type $data_center_name $seed_node_public_ip
                           '''
                     }
                 ]
@@ -79,42 +88,20 @@ def GenerateConfig(context):
     }
 
     ops_center_script = '''
-    #! /bin/bash
-    ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
-    echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
-    gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
-    apt-get update
-    apt-get install openjdk-7-jdk -yqq
+      #!/usr/bin/env bash
 
-    echo "Installing OpsCenter"
-    echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
-    curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
-    apt-get update
-    apt-get -y install opscenter=5.2.4
+      location=$1
+      uniqueString=$2
 
-    echo "Starting OpsCenter"
-    sudo service opscenterd start
+      seed_node_dns_name="dc0vm0$uniqueString.$location.cloudapp.azure.com"
+      seed_node_public_ip=`dig +short $seed_node_dns_name | awk '{ print ; exit }'`
 
-    echo "Waiting for OpsCenter to start..."
-    sleep 15
+      wget https://github.com/DSPN/install-datastax/archive/master.zip
+      apt-get -y install unzip
+      unzip master.zip
+      cd install-datastax-master/bin
 
-    echo "Waiting for Java to install on the nodes..."
-    sleep 120
-
-    wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/provision/opsCenter.py
-
-    echo "Generating a provision.json file"
-    python opsCenter.py '''
-
-    # parameters go here
-    ops_center_script += context.env['deployment'] + ' '
-    ops_center_script += base64.b64encode(json.dumps(context.properties['zones'])) + ' '
-    ops_center_script += str(context.properties['nodesPerZone']) + ' '
-    ops_center_script += str(context.properties['nodeType'])
-
-    ops_center_script += '''
-    echo "Provisioning a new cluster using provision.json"
-    curl --insecure -H "Accept: application/json" -X POST http://127.0.0.1:8888/provision -d @provision.json
+      #./opscenter.sh $seed_node_public_ip
     '''
 
     ops_center_node = {
