@@ -38,10 +38,13 @@ def GenerateReferencesList(context):
 def GenerateConfig(context):
     config = {'resources': []}
 
-    seed_nodes_dns_names = ''
-    for zone in context.properties['zones']:
-        seed_nodes_dns_names += context.env['deployment'] + '-service-' + zone + '-1-vm,'
-    seed_nodes_dns_names = seed_nodes_dns_names[:-1]
+    #seed_nodes_dns_names = ''
+    #for zone in context.properties['zones']:
+    #    seed_nodes_dns_names += context.env['deployment'] + '-service-' + zone + '-1-vm,'
+    #seed_nodes_dns_names = seed_nodes_dns_names[:-1]
+
+    # just going to do one seed for now
+    seed_nodes_dns_names = context.env['deployment'] + '-service-' + context.properties['zones'][0] + '-1-vm'
 
     dse_node_script = '''
         #!/usr/bin/env bash
