@@ -38,6 +38,25 @@ def GenerateReferencesList(context):
 def GenerateConfig(context):
     config = {'resources': []}
 
+    seed_nodes_dns_names = ''
+    for zone in context.properties['zones']:
+        seed_nodes_dns_names += context.env['deployment'] + '-service-' + zone + '-1-vm, '
+    seed_nodes_dns_names = seed_nodes_dns_names[:-2]
+
+    dse_node_script = '''
+        #!/usr/bin/env bash
+
+        wget https://github.com/DSPN/install-datastax/archive/master.zip
+        apt-get -y install unzip
+        unzip master.zip
+        cd install-datastax-master/bin
+
+        cloud_type="google"
+        data_center_name="foo"
+        seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+        ./dse.sh $cloud_type $data_center_name $seed_nodes_dns_names
+        '''
+
     zonal_clusters = {
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
@@ -64,23 +83,7 @@ def GenerateConfig(context):
                 'items': [
                     {
                         'key': 'startup-script',
-                        'value': '''
-                          #!/usr/bin/env bash
-                          cloud_type="google"
-                          data_center_name="foo"
-
-                          location=$2 #this is the location of the seed and OpsCenter, not necessarily of this node
-                          uniqueString=$3
-                          seed_node_dns_name="dc0vm0$uniqueString.$location.cloudapp.azure.com"
-                          seed_node_public_ip=`dig +short $seed_node_dns_name | awk '{ print ; exit }'`
-
-                          wget https://github.com/DSPN/install-datastax/archive/master.zip
-                          apt-get -y install unzip
-                          unzip master.zip
-                          cd install-datastax-master/bin
-
-                          ./dse.sh $cloud_type $data_center_name $seed_node_public_ip
-                          '''
+                        'value': dse_node_script
                     }
                 ]
             }
@@ -90,18 +93,13 @@ def GenerateConfig(context):
     ops_center_script = '''
       #!/usr/bin/env bash
 
-      location=$1
-      uniqueString=$2
-
-      seed_node_dns_name="dc0vm0$uniqueString.$location.cloudapp.azure.com"
-      seed_node_public_ip=`dig +short $seed_node_dns_name | awk '{ print ; exit }'`
-
       wget https://github.com/DSPN/install-datastax/archive/master.zip
       apt-get -y install unzip
       unzip master.zip
       cd install-datastax-master/bin
 
-      #./opscenter.sh $seed_node_public_ip
+      seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+      ./opscenter.sh $seed_node_public_ip
     '''
 
     ops_center_node = {
