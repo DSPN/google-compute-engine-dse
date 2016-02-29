@@ -58,6 +58,10 @@ def GenerateConfig(context):
         zone=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/zone" | grep -o [[:alnum:]-]*$)
         data_center_name=$zone
         seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+        echo "Configuring nodes with the settings:"
+        echo cloud_type \'$cloud_type\'
+        echo data_center_name \'$data_center_name\'
+        echo seed_nodes_dns_names \'$seed_nodes_dns_names\'
         ./dse.sh $cloud_type $data_center_name $seed_nodes_dns_names
         '''
 
