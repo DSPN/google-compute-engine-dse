@@ -55,7 +55,8 @@ def GenerateConfig(context):
         cd install-datastax-master/bin
 
         cloud_type="google"
-        data_center_name="foo"
+        zone=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google")
+        data_center_name=$zone
         seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
         ./dse.sh $cloud_type $data_center_name $seed_nodes_dns_names
         '''
