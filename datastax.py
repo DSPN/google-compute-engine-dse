@@ -107,6 +107,8 @@ def GenerateConfig(context):
       cd install-datastax-master/bin
 
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+      echo "Configuring nodes with the settings:"
+      echo seed_nodes_dns_names $seed_nodes_dns_names
       ./opscenter.sh $seed_nodes_dns_names
     '''
 
