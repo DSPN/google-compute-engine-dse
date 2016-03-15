@@ -90,7 +90,7 @@ def GenerateConfig(context):
     echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
     curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
     apt-get update
-    apt-get -y install opscenter=5.2.4
+    apt-get -y install opscenter=5.2.2
 
     echo "Starting OpsCenter"
     sudo service opscenterd start
