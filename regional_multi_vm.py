@@ -10,7 +10,7 @@ def GenerateConfig(context):
         new_properties = copy.deepcopy(context.properties)
         new_properties["zone"] = zone
         service = {
-            'name': context.env['deployment'] + '-service-' + zone,
+            'name': context.env['deployment'] + '-' + zone,
             'type': 'vm_multiple_instances.py',
             'properties': new_properties
         }

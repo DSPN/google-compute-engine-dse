@@ -25,7 +25,7 @@ def getNodeInformation(deploymentName, region, numberOfNodes, nodeType):
     nodeInformation = []
 
     for nodeIndex in range(1, numberOfNodes+1):
-        nodeName = deploymentName + '-service-' + region + '-' + str(nodeIndex) + '-vm'
+        nodeName = deploymentName + '-' + region + '-' + str(nodeIndex) + '-vm'
         nodeIP = socket.gethostbyname_ex(nodeName)[2][0]
         document = {
             "public_ip": nodeIP,
@@ -64,7 +64,7 @@ def getAcceptedFingerprints(deploymentName, regions, nodesPerRegion):
     acceptedFingerprints = {}
     for region in regions:
         for nodeIndex in range(1, nodesPerRegion+1):
-            nodeName = deploymentName + '-service-' + region + '-' + str(nodeIndex) + '-vm'
+            nodeName = deploymentName + '-' + region + '-' + str(nodeIndex) + '-vm'
             nodeIP = socket.gethostbyname_ex(nodeName)[2][0]
             acceptedFingerprints[nodeIP] = getFingerprint(nodeIP)
 
