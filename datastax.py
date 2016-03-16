@@ -4,7 +4,7 @@ import json
 
 
 def GenerateFirewall(context):
-    name = 'opscenterfirewall-' + context.env['name']
+    name = context.env['deployment'] + '-opscenterfirewall-' + context.env['name']
     firewalls = [
         {
             'name': name,
@@ -118,7 +118,7 @@ def GenerateConfig(context):
     '''
 
     ops_center_node = {
-        'name': 'opscenter-' + context.env['name'],
+        'name': context.env['deployment'] + '-opscenter-' + context.env['name'],
         'type': 'vm_instance.py',
         'properties': {
             'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1510-wily-v20160315',
