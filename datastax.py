@@ -108,7 +108,7 @@ def GenerateConfig(context):
         wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/provision/opsCenter.py
 
         echo "Generating a provision.json file"
-        python opsCenter.py'''
+        python opsCenter.py '''
 
     # parameters go here
     ops_center_script += context.env['deployment'] + ' '
