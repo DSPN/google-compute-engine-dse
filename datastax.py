@@ -65,13 +65,15 @@ def GenerateConfig(context):
                     {
                         'key': 'startup-script',
                         'value': '''
-                          #!/bin/bash
-                          mkdir /mnt
-                          /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
-                          chmod 777 /mnt
-                          apt-get update
-                          apt-get install openjdk-8-jdk -yqq
-                          '''
+                            #!/bin/bash
+                            mkdir /mnt
+                            /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
+                            chmod 777 /mnt
+
+                            echo "Installing Java"
+                            apt-get update
+                            apt-get -y install openjdk-7-jre-headless
+                        '''
                     }
                 ]
             }
@@ -79,33 +81,35 @@ def GenerateConfig(context):
     }
 
     ops_center_script = '''
-    #! /bin/bash
-    ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
-    echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
-    gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
+        #! /bin/bash
+        ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
+        echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
+        gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
 
-    apt-get update
-    apt-get install openjdk-8-jdk -yqq
+        echo "Installing Java"
+        apt-get update
+        apt-get -y install openjdk-7-jre-headless
 
-    echo "Installing OpsCenter"
-    echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
-    curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
-    apt-get update
-    apt-get -y install opscenter=5.2.4
+        echo "Installing OpsCenter"
+        echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
+        curl -L http://debian.datastax.com/debian/repo_key | apt-key add -
+        apt-get update
+        apt-get -y install opscenter=5.2.4
 
-    echo "Starting OpsCenter"
-    sudo service opscenterd start
+        echo "Starting OpsCenter"
+        sudo service opscenterd start
 
-    echo "Waiting for OpsCenter to start..."
-    sleep 15
+        echo "Waiting for OpsCenter to start..."
+        sleep 15
 
-    echo "Waiting for Java to install on nodes..."
-    sleep 120
+        echo "Waiting for Java to install on nodes..."
+        sleep 120
 
-    wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/provision/opsCenter.py
+        wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/provision/opsCenter.py
 
-    echo "Generating a provision.json file"
-    python opsCenter.py '''
+        echo "Generating a provision.json file"
+        python opsCenter.py
+    '''
 
     # parameters go here
     ops_center_script += context.env['deployment'] + ' '
