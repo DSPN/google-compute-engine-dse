@@ -42,7 +42,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1510-wily-v20160310',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': 'default',
@@ -69,6 +69,8 @@ def GenerateConfig(context):
                           mkdir /mnt
                           /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
                           chmod 777 /mnt
+                          apt-get update
+                          apt-get install openjdk-8-jdk -yqq
                           '''
                     }
                 ]
@@ -81,6 +83,9 @@ def GenerateConfig(context):
     ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
     echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
     gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
+
+    apt-get update
+    apt-get install openjdk-8-jdk -yqq
 
     echo "Installing OpsCenter"
     echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
@@ -114,7 +119,7 @@ def GenerateConfig(context):
         'name': context.env['deployment'] + '-opscenter-' + context.env['name'],
         'type': 'vm_instance.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1510-wily-v20160310',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': 'default',
