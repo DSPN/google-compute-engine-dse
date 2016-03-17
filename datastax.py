@@ -108,8 +108,7 @@ def GenerateConfig(context):
         wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/provision/opsCenter.py
 
         echo "Generating a provision.json file"
-        python opsCenter.py
-    '''
+        python opsCenter.py'''
 
     # parameters go here
     ops_center_script += context.env['deployment'] + ' '
@@ -118,8 +117,8 @@ def GenerateConfig(context):
     ops_center_script += str(context.properties['nodeType'])
 
     ops_center_script += '''
-    echo "Provisioning a new cluster using provision.json"
-    curl --insecure -H "Accept: application/json" -X POST http://127.0.0.1:8888/provision -d @provision.json
+        echo "Provisioning a new cluster using provision.json"
+        curl --insecure -H "Accept: application/json" -X POST http://127.0.0.1:8888/provision -d @provision.json
     '''
 
     ops_center_node = {
