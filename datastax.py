@@ -69,8 +69,6 @@ def GenerateConfig(context):
                           mkdir /mnt
                           /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
                           chmod 777 /mnt
-                          apt-get update
-                          apt-get install openjdk-7-jdk -yqq
                           '''
                     }
                 ]
@@ -83,8 +81,6 @@ def GenerateConfig(context):
     ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""
     echo -n 'root:' | cat - /tmp/sshkey.pub > temp && mv temp /tmp/sshkey.pub
     gcloud compute project-info add-metadata --metadata-from-file sshKeys=/tmp/sshkey.pub
-    apt-get update
-    apt-get install openjdk-7-jdk -yqq
 
     echo "Installing OpsCenter"
     echo "deb http://debian.datastax.com/community stable main" | tee -a /etc/apt/sources.list.d/datastax.community.list
@@ -97,9 +93,6 @@ def GenerateConfig(context):
 
     echo "Waiting for OpsCenter to start..."
     sleep 15
-
-    echo "Waiting for Java to install on the nodes..."
-    sleep 120
 
     wget https://raw.githubusercontent.com/DSPN/google-cloud-platform-dse/master/provision/opsCenter.py
 
