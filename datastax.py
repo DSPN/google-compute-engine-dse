@@ -49,7 +49,7 @@ def GenerateConfig(context):
             'numberOfVMReplicas': context.properties['nodesPerZone'],
             'disks': [
                 {
-                    'deviceName': 'vm-test-data-disk',
+                    'deviceName': 'vm-data-disk',
                     'type': 'PERSISTENT',
                     'boot': 'false',
                     'autoDelete': 'true',
@@ -67,7 +67,7 @@ def GenerateConfig(context):
                         'value': '''
                             #!/bin/bash
                             mkdir /mnt
-                            /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-test-data-disk /mnt
+                            /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
                             chmod 777 /mnt
 
                             echo "Installing Java"
