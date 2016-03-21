@@ -62,7 +62,7 @@ def GenerateConfig(context):
         echo cloud_type $cloud_type
         echo data_center_name $data_center_name
         echo seed_nodes_dns_names $seed_nodes_dns_names
-        ./dse.sh $cloud_type $data_center_name $seed_nodes_dns_names
+        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name
         '''
 
     zonal_clusters = {
@@ -109,7 +109,8 @@ def GenerateConfig(context):
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
       echo "Configuring nodes with the settings:"
       echo seed_nodes_dns_names $seed_nodes_dns_names
-      ./opscenter.sh $seed_nodes_dns_names
+      cloud_type="google"
+      ./opscenter.sh $cloud_type $seed_nodes_dns_names
     '''
 
     ops_center_node = {
