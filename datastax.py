@@ -1,6 +1,4 @@
 import yaml
-import base64
-import json
 
 
 def GenerateFirewall(context):
@@ -38,12 +36,6 @@ def GenerateReferencesList(context):
 def GenerateConfig(context):
     config = {'resources': []}
 
-    #seed_nodes_dns_names = ''
-    #for zone in context.properties['zones']:
-    #    seed_nodes_dns_names += context.env['deployment'] + '-service-' + zone + '-1-vm,'
-    #seed_nodes_dns_names = seed_nodes_dns_names[:-1]
-
-    # just going to do one seed for now
     seed_nodes_dns_names = context.env['deployment'] + '-service-' + context.properties['zones'][0] + '-1-vm.c.' + context.env['project'] + '.internal'
 
     dse_node_script = '''
@@ -60,8 +52,8 @@ def GenerateConfig(context):
         seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
         echo "Configuring nodes with the settings:"
         echo cloud_type $cloud_type
-        echo data_center_name $data_center_name
         echo seed_nodes_dns_names $seed_nodes_dns_names
+        echo data_center_name $data_center_name
         ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name
         '''
 
@@ -106,10 +98,11 @@ def GenerateConfig(context):
       unzip master.zip
       cd install-datastax-master/bin
 
+      cloud_type="google"
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
       echo "Configuring nodes with the settings:"
+      echo cloud_type $cloud_type
       echo seed_nodes_dns_names $seed_nodes_dns_names
-      cloud_type="google"
       ./opscenter.sh $cloud_type $seed_nodes_dns_names
     '''
 
