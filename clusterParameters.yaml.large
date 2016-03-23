@@ -29,7 +29,7 @@ resources:
     - asia-east1-b
     - asia-east1-c
     machineType: n1-standard-1
-    nodesPerZone: 7
+    nodesPerZone: 10
     nodeType: cassandra
     diskSize: 10
     opsCenterZone: us-central1-a
