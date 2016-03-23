@@ -8,9 +8,9 @@ def GenerateConfig(context):
     # A zonal vm_multiple_instances resource for each zone in the properties list.
     for zone in context.properties['zones']:
         new_properties = copy.deepcopy(context.properties)
-        new_properties["zone"] = zone
+        new_properties['zone'] = zone
         service = {
-            'name': context.env['deployment'] + '-service-' + zone,
+            'name': context.env['deployment'] + '-' + zone,
             'type': 'vm_multiple_instances.py',
             'properties': new_properties
         }
