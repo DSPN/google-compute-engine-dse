@@ -71,9 +71,12 @@ def GetZonesList(context):
 def GenerateConfig(context):
     config = {'resources': []}
 
-    if ('zones' not in context.properties or
-        len(context.properties['zones']) == 0):
+    # Set zones list based on zone booleans.
+    if ('zones' not in context.properties or len(context.properties['zones']) == 0):
       context.properties['zones'] = GetZonesList(context)
+
+    # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
+    context.properties['zone'] = context.properties['opsCenterZone']
 
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env['project'] + '.internal'
 
