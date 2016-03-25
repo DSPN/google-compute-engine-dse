@@ -25,17 +25,6 @@ def GenerateFirewall(context):
     return firewalls
 
 
-def GenerateReferencesList(context):
-    reference_list = []
-    n_of_copies = context.properties['nodesPerZone']
-    dep_name = context.env['deployment']
-    for zone in context.properties['zones']:
-        for idx in range(1, n_of_copies + 1):
-            node_name = '$(ref.' + dep_name + '-' + zone + '-' + str(idx) + '-vm' + '.selfLink)'
-            reference_list.append(node_name)
-    return ' '.join(reference_list)
-
-
 def GetZonesList(context):
     zones = []
     if context.properties['usEast1b']:
@@ -172,10 +161,6 @@ def GenerateConfig(context):
                     {
                         'key': 'startup-script',
                         'value': ops_center_script
-                    },
-                    {
-                        'key': 'bogus-references',
-                        'value': GenerateReferencesList(context)
                     }
                 ]
             }
