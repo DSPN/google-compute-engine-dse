@@ -89,7 +89,11 @@ def GenerateConfig(context):
         echo cloud_type $cloud_type
         echo seed_nodes_dns_names $seed_nodes_dns_names
         echo data_center_name $data_center_name
-        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name
+
+        dse_username=datastax%40google.com
+        dse_password=8GdeeVT2s7zi
+
+        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name $dse_username $dse_password
         '''
 
     zonal_clusters = {
