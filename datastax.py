@@ -80,7 +80,7 @@ def GenerateConfig(context):
         unzip master.zip
         cd install-datastax-master/bin
 
-        cloud_type="google"
+        cloud_type="gce"
         zone=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/zone" | grep -o [[:alnum:]-]*$)
         data_center_name=$zone
         seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
@@ -134,7 +134,7 @@ def GenerateConfig(context):
       unzip master.zip
       cd install-datastax-master/bin
 
-      cloud_type="google"
+      cloud_type="gce"
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
       echo "Configuring nodes with the settings:"
       echo cloud_type $cloud_type
