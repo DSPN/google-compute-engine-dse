@@ -75,10 +75,10 @@ def GenerateConfig(context):
         mkdir /mnt
         /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
 
-        wget https://github.com/DSPN/install-datastax/archive/master.zip
+        wget https://github.com/DSPN/install-datastax/archive/1.0.zip
         apt-get -y install unzip
-        unzip master.zip
-        cd install-datastax-master/bin
+        unzip 1.0.zip
+        cd install-datastax-1.0/bin
 
         cloud_type="gce"
         zone=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/zone" | grep -o [[:alnum:]-]*$)
@@ -129,10 +129,10 @@ def GenerateConfig(context):
     ops_center_script = '''
       #!/usr/bin/env bash
 
-      wget https://github.com/DSPN/install-datastax/archive/master.zip
+      wget https://github.com/DSPN/install-datastax/archive/1.0.zip
       apt-get -y install unzip
-      unzip master.zip
-      cd install-datastax-master/bin
+      unzip 1.0.zip
+      cd install-datastax-1.0/bin
 
       cloud_type="gce"
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
