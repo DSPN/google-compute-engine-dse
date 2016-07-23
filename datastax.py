@@ -68,8 +68,8 @@ def GenerateConfig(context):
     context.properties['zone'] = context.properties['opsCenterZone']
 
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env['project'] + '.internal'
-    ops_center_node_name = context.env['deployment'] + '-opscenter-vm'
-    ops_center_node_name_dns_name = ops_center_node_name + '.' + context.env['project'] + '.internal'
+    opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
+    opscenter_dns_name = opscenter_node_name + '.' + context.env['project'] + '.internal'
 
     dse_node_script = '''
         #!/usr/bin/env bash
@@ -88,16 +88,19 @@ def GenerateConfig(context):
         cd install-datastax-master/bin
 
         cloud_type="gce"
+        seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+
         zone=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/zone" | grep -o [[:alnum:]-]*$)
         data_center_name=$zone
-        seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+        opscenter_dns_name=''' + opscenter_dns_name + '''
 
         echo "Configuring nodes with the settings:"
         echo cloud_type $cloud_type
         echo seed_nodes_dns_names $seed_nodes_dns_names
         echo data_center_name $data_center_name
-        
-        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name
+        echo opscenter_dns_name $opscenter_dns_name
+
+        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name $opscenter_dns_name
         '''
 
     zonal_clusters = {
@@ -133,7 +136,7 @@ def GenerateConfig(context):
         }
     }
 
-    ops_center_script = '''
+    opscenter_script = '''
       #!/usr/bin/env bash
 
       apt-get -y install unzip
@@ -154,12 +157,12 @@ def GenerateConfig(context):
       ./opscenter.sh $cloud_type $seed_nodes_dns_names
     '''
 
-    ops_center_node_name = context.env['deployment'] + '-opscenter-vm'
-    ops_center_node = {
-        'name': ops_center_node_name,
+    opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
+    opscenter_node = {
+        'name': opscenter_node_name,
         'type': 'vm_instance.py',
         'properties': {
-            'instanceName': ops_center_node_name,
+            'instanceName': opscenter_node_name,
             'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-ubuntu1404-img-03172016',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
@@ -173,7 +176,7 @@ def GenerateConfig(context):
                 'items': [
                     {
                         'key': 'startup-script',
-                        'value': ops_center_script
+                        'value': opscenter_script
                     }
                 ]
             }
@@ -181,7 +184,7 @@ def GenerateConfig(context):
     }
 
     config['resources'].append(zonal_clusters)
-    config['resources'].append(ops_center_node)
+    config['resources'].append(opscenter_node)
     config['resources'].extend(GenerateFirewall(context))
 
     first_enterprise_node_name = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm'
@@ -192,7 +195,7 @@ def GenerateConfig(context):
         },
         {
             'name': 'opsCenterNodeName',
-            'value': ops_center_node_name
+            'value': opscenter_node_name
         },
         {
             'name': 'firstEnterpriseNodeName',
@@ -212,7 +215,7 @@ def GenerateConfig(context):
         },
         {
             'name': 'x-status-instance',
-            'value': ops_center_node_name
+            'value': opscenter_node_name
         }
     ]
     config['outputs'] = outputs
