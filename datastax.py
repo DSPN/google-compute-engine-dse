@@ -69,7 +69,7 @@ def GenerateConfig(context):
 
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env['project'] + '.internal'
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
-    opscenter_dns_name = opscenter_node_name + '.' + context.env['project'] + '.internal'
+    opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal'
 
     dse_node_script = '''
         #!/usr/bin/env bash
