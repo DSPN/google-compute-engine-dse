@@ -31,6 +31,9 @@ EXCLUDES=`python -c  "import os; print ','.join([os.path.join('/home', d) for d 
 sudo su
 apt-get update
 
+# If you're going through all this trouble, you probably want to check you're using the latest packages
+apt-cache policy packagename
+
 # Install Java
 echo "Installing the Oracle JDK"
 
