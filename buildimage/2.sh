@@ -7,12 +7,13 @@ INSTANCE=instance-1
 # SSH into the instance:
 gcloud compute ssh ${INSTANCE}
 
+### not doing all this disk magic either
 # Format and mount your new disk as /mnt/tmp
-sudo mkdir /mnt/tmp
-sudo /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/sdb /mnt/tmp
+#sudo mkdir /mnt/tmp
+#sudo /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/sdb /mnt/tmp
 
 # By default /dev/sdb is the default for mounted disk. You can check this via:
-ls -l /dev/disk/by-id/google-*
+#ls -l /dev/disk/by-id/google-*
 
 # Create a Google Cloud Storage bucket if you do not already have one available
 # Go to Google cloud developer console
@@ -23,25 +24,22 @@ ls -l /dev/disk/by-id/google-*
 # From the VM instance, run gcloud command to package, creating a tar ball
 
 # Name of the output filename for your disk image. By default it's an image size hex
-INSTANCE=$(hostname)
+#INSTANCE=$(hostname)
 
 # Creates a list of home dir to exclude
-EXCLUDES=`python -c  "import os; print ','.join([os.path.join('/home', d) for d in os.listdir('/home')])"`
+#EXCLUDES=`python -c  "import os; print ','.join([os.path.join('/home', d) for d in os.listdir('/home')])"`
 
 sudo su
 apt-get update
 
 # If you're going through all this trouble, you probably want to check you're using the latest packages
-apt-cache policy packagename
+apt-cache policy oracle-java8-installer
 
 # Install Java
-echo "Installing the Oracle JDK"
 
-# Install add-apt-repository
 apt-get -y install software-properties-common
-
 add-apt-repository -y ppa:webupd8team/java
-apt-get -y update
+apt-get update
 echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
 echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
 apt-get -y install oracle-java8-installer

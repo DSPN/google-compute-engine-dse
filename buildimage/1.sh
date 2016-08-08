@@ -14,5 +14,6 @@ gcloud compute --project "datastax-dev" instances create ${INSTANCE} --zone "us-
 gcloud compute instances describe ${INSTANCE}
 
 # Create a non-root persistent disk to hold your tar file. You can detach and delete the disk afterwards.
+### not doing this with the new instructions
 gcloud compute disks create ${INSTANCE}-export
 gcloud compute instances attach-disk ${INSTANCE} --disk ${INSTANCE}-export --device-name export-disk
