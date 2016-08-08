@@ -28,8 +28,29 @@ INSTANCE=$(hostname)
 # Creates a list of home dir to exclude
 EXCLUDES=`python -c  "import os; print ','.join([os.path.join('/home', d) for d in os.listdir('/home')])"`
 
-sudo apt-get update
-sudo apt-get install openjdk-8-jdk -yqq
+sudo su
+apt-get update
+
+# Install Java
+echo "Installing the Oracle JDK"
+
+# Install add-apt-repository
+apt-get -y install software-properties-common
+
+add-apt-repository -y ppa:webupd8team/java
+apt-get -y update
+echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+apt-get -y install oracle-java8-installer
+
+# Download, but do not install DataStax Enterprise
+echo "deb http://datastax%40google.com:8GdeeVT2s7zi@debian.datastax.com/enterprise stable main" | sudo tee -a /etc/apt/sources.list.d/datastax.sources.list
+curl -L http://debian.datastax.com/debian/repo_key | sudo apt-key add -
+apt-get -y update
+dse_version=5.0.1-1
+apt-get -y -d install dse-full=$dse_version dse=$dse_version dse-hive=$dse_version dse-pig=$dse_version dse-demos=$dse_version dse-libsolr=$dse_version dse-libtomcat=$dse_version dse-libsqoop=$dse_version dse-liblog4j=$dse_version dse-libmahout=$dse_version dse-libhadoop-native=$dse_version dse-libcassandra=$dse_version dse-libhive=$dse_version dse-libpig=$dse_version dse-libhadoop=$dse_version dse-libspark=$dse_version
+opscenter_version=6.0.1
+apt-get -y -d install datastax-agent=$opscenter_version opscenter=$opscenter_version
 
 # To copy the image directly to a storage bucket use --bucket=BUCKET_NAME with the above command
 # The image is stored as a raw block file, packaged and compressed using gzip and tar. The raw block file contains the OS and all installed packages, plus all files in the root persistent disk. It does not include files or packages in a non-root persistent disk.
@@ -40,7 +61,6 @@ sudo gcimagebundle -d /dev/sda -o /mnt/tmp --log_file=/tmp/export.log --output_f
 
 # Untar the ${INSTANCE}-image.tar.gz to obtain disk.raw file
 cd /mnt/tmp
-sudo su
 tar -xvf datastax-image.tar.gz
 
 ## set the GCP project ID  and zone to gcloud
