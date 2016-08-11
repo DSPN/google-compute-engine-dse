@@ -79,7 +79,7 @@ def GenerateConfig(context):
 
         apt-get -y install unzip
 
-        wget https://github.com/DSPN/install-datastax/archive/5.0.1-1.zip
+        wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-1.zip
         unzip 5.0.1-1.zip
         cd install-datastax-5.0.1-1/bin
 
@@ -137,7 +137,7 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      wget https://github.com/DSPN/install-datastax/archive/5.0.1-1.zip
+      wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-1.zip
       unzip 5.0.1-1.zip
       cd install-datastax-5.0.1-1/bin
 
