@@ -13,6 +13,7 @@ add-apt-repository -y ppa:webupd8team/java
 apt-get update
 
 # If you're going through all this trouble, you probably want to check you're using the latest packages
+# I should really try specifying version here...
 apt-cache policy oracle-java8-installer
 
 echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
