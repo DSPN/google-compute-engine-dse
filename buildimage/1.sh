@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-INSTANCE=instance-2
+INSTANCE=instance-3
 
 # You're going to want to ensure this image is built with the latest 14.04.  To check what that is, run:
 gcloud compute images list

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SSH into the instance
-INSTANCE=instance-2
+INSTANCE=instance-3
 gcloud compute ssh ${INSTANCE}
 
 sudo su
