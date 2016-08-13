@@ -7,25 +7,18 @@ gcloud compute ssh ${INSTANCE}
 sudo su
 
 ### Install Java
-apt-get update
-apt-get -y install software-properties-common
 add-apt-repository -y ppa:webupd8team/java
 apt-get update
 
 echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
 echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
 
-# If you're going through all this trouble, you probably want to check you're using the latest packages
-apt-cache policy oracle-java8-installer
-java_version=123
-
-# I should really try specifying version here...
-apt-get -y install oracle-java8-installer=$java_version
+apt-get -y install oracle-java8-installer
 
 ### Download, but do not install DataStax Enterprise
 echo "deb http://datastax%40google.com:8GdeeVT2s7zi@debian.datastax.com/enterprise stable main" | sudo tee -a /etc/apt/sources.list.d/datastax.sources.list
 curl -L http://debian.datastax.com/debian/repo_key | sudo apt-key add -
-apt-get -y update
+apt-get update
 
 # If you're going through all this trouble, you probably want to check you're using the latest packages
 apt-cache policy dse-full
