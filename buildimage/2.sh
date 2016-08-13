@@ -9,11 +9,12 @@ sudo su
 ### Install Java
 add-apt-repository -y ppa:webupd8team/java
 apt-get update
-
 echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
 echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-
 apt-get -y install oracle-java8-installer
+
+# make sure java works
+java -version
 
 ### Download, but do not install DataStax Enterprise
 echo "deb http://datastax%40google.com:8GdeeVT2s7zi@debian.datastax.com/enterprise stable main" | sudo tee -a /etc/apt/sources.list.d/datastax.sources.list
