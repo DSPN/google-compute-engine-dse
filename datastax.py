@@ -79,9 +79,9 @@ def GenerateConfig(context):
 
         apt-get -y install unzip
 
-        wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-3.zip
-        unzip 5.0.1-3.zip
-        cd install-datastax-ubuntu-5.0.1-3/bin
+        wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-4.zip
+        unzip 5.0.1-4.zip
+        cd install-datastax-ubuntu-5.0.1-4/bin
 
         cloud_type="gce"
         seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
@@ -137,9 +137,9 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-3.zip
-      unzip 5.0.1-3.zip
-      cd install-datastax-ubuntu-5.0.1-3/bin
+      wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.0.1-4.zip
+      unzip 5.0.1-4.zip
+      cd install-datastax-ubuntu-5.0.1-4/bin
 
       cloud_type="gce"
       seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
