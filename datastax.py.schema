@@ -1,12 +1,12 @@
 imports:
   - path: regional_multi_vm.py
-  - path: gcp/common.py
+  - path: common/common.py
     name: common.py
-  - path: gcp/default.py
+  - path: common/default.py
     name: default.py
-  - path: gcp/vm_instance.py
+  - path: common/vm_instance.py
     name: vm_instance.py
-  - path: gcp/vm_multiple_instances.py
+  - path: common/vm_multiple_instances.py
     name: vm_multiple_instances.py
 
 required:
