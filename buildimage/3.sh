@@ -2,6 +2,9 @@
 
 ### gcloud commands to copy the disk from our dev project to our public project
 
+# set the zone
+gcloud config set compute/zone us-central1-a
+
 # 1. Create a disk from the existing image (datastax-ubuntu-1404-trusty-v20160808) in dev project.
 # gcloud compute disks create NEW_IMAGE_DISK --image-project DEV_PROJECT --image SOURCE_IMAGE --zone us-central1-a
 gcloud compute disks create newimagedisk --image-project datastax-dev --image datastax-ubuntu-1404-trusty-v20160808 --zone us-central1-a
