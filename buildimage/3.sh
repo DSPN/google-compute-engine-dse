@@ -12,9 +12,10 @@ gcloud compute disks create newimagedisk --image datastax-ubuntu-1404-trusty-v20
 #### 2.
 
 # Create an image in public project using the newly created disk
-#gcloud compute images create --project PROD_PROJECT --source-disk DISK_NAME --source-disk-zone us-central1-a --description IMAGE_DESCRIPTION
+# gcloud compute images create --project PROD_PROJECT --source-disk DISK_NAME --source-disk-zone us-central1-a --description IMAGE_DESCRIPTION
 gcloud compute images create datastax-ubuntu-1404-trusty-v20160808 --project datastax-public --source-disk newimagedisk --source-disk-zone us-central1-a --description datastax
 
-# 3. Delete the disk
+#### 3.
+# Delete the disk
 #​ gcloud compute disks delete NEW_IMAGE_DISK --zone us-central1-a
 ​gcloud compute disks delete newimagedisk --zone us-central1-a
