@@ -6,36 +6,26 @@ The [DataStax Enterprise Deployment Guide for Google](https://academy.datastax.c
 
 # Deploying to Google Cloud Platform (GCP)
 
-To use these templates, you will need to register for a GCP account.  Google offers a free trial for new users.  You will also need to install the Cloud SDK locally or use the 
+## Set up GCP Prerequisites
 
-2.1 Register for a GCP account
+To use these templates, you will need to register for a GCP account.  Google offers a free trial for new users.  You will also need to install the Cloud SDK locally or use the Google Cloud Shell.  In these instruction we use a local install of the Cloud SDK.  More information is available at:
+* https://cloud.google.com/sdk/
+* https://cloud.google.com/shell/docs/
 
+If you haven't already, you will also need to create a GCP project.  That can be accomplished in the Google Cloud Console here: https://console.cloud.google.com/ 
 
-2.2 Install Google Cloud SDK
+After creating the project, set it as the default project that gcloud will use with the command:
 
-To install the Google Cloud SDK follow these instructions: https://cloud.google.com/sdk/
+    gcloud config set project myproject
 
-The SDK includes command line tools for interacting with GCP
-
-2.3 Log in to the Console
-
-In addition to the command line, GCP offers a web based console.  You can login to that here: https://console.developers.google.com
-
-2.4 Create a Project
-
-Use the console to create a project for the DataStax Enterprise deployment. Click the create project button and assign a useful name.  The project-id field has to be globally unique, so it is convenient to use the suggestion provided by the tool, but it is possible to specify it manually.
-
-After creating the project, set it as the default project that gcloud will use for all commands with the command:
-
-gcloud config set project myproject
-
-2.5 Clone the Template Repo
+## Clone the Template Repo
 
 Now that you have the gcloud tools installed, you’ll want to clone of copy of the template repo.  The GCE repo is here: https://github.com/DSPN/google-compute-engine-dse
 
-To do that, use the command:
+To clone it use the command:
 
-git clone https://github.com/DSPN/google-compute-engine-dse.git
+    git clone https://github.com/DSPN/google-compute-engine-dse.git
+
 If all went well, output should look something like this:
 
 
