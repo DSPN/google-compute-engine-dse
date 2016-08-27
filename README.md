@@ -18,7 +18,7 @@ After creating the project, set it as the default project that gcloud will use w
 
     gcloud config set project myproject
 
-## Clone the Template Repo
+## Clone and Investigate the Template Repo
 
 Now that you have the gcloud tools installed, you’ll want to clone of copy of the template repo.  The GCE repo is here: https://github.com/DSPN/google-compute-engine-dse
 
@@ -28,27 +28,31 @@ To clone it use the command:
 
 If all went well, output should look something like this:
 
-
+![](./img/gitclone.png)
 
 Now cd into the repo dir and list files there using the commands:
 
-cd google-cloud-platform-dse
-ls
+    clear
+    cd google-compute-engine-dse
+    ls
 
+![](./img/ls.png)
 
 Our main entry point is a file called deploy.sh. We can inspect that file using the commands:
 
-clear
-cat deploy.sh
+    clear
+    cat deploy.sh
 
+![](./img/catdeploy.png)
 
 This is an extremely simple shell script that invokes the Google Cloud SDK. It takes one argument, the name of the deployment. The deployment name needs to be unique within you project. The deploy.sh script also depends on the input file clusterParameters.yaml. This file defines our cluster topology. Let’s take a quick look with the following commands:
 
-clear
-cat clusterParameters.yaml
+    clear
+    cat clusterParameters.yaml
 
+![](./img/catclusterparameters.png)
 
-This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-1. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 10GB pd-ssd. This is an extremely small disk for a production environment but will be fine for our test deployment.
+This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 10GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
 
 Two example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request you core quotas be increased to run it.
 
@@ -56,18 +60,19 @@ We encourage you to look at the templates more and better understand what they�
 
 Now that we’ve had a look through the project, let’s try running it!
 
-2.6 Create a Deployment
+## Create a Deployment
 
 We’re going to start of by creating a new deployment. I’m going to call mine ben1. To create it, I’m going to enter the command:
 
-./deploy.sh ben1
+    ./deploy.sh ben1
+
 When I do that, I see the following output:
 
-
+![](./img/deploy.png)
 
 At this point, the physical resources on GCE have all provisioned. However, each machine has a script that runs and installs Java as well as provisioning DSE. That will take another few minutes to run.
 
-2.7 Inspecting the Output
+## Inspecting the Deployment
 
 The easiest way to inspect output is in the web interface. You can access this at http://cloud.google.com.  Once logged in, click on "my console." If you click the three horizontal lines in the upper left and scroll down, you should see an option under "Tools" titled "Deployment Manager." Click that.
 
@@ -97,21 +102,63 @@ At this point you have a running DSE cluster! You can ssh into any of the nodes 
 nodetool status
 cqlsh
 
+## Inspecting the Cluster
 
-2.8 Deleting a Deployment
+The infrastructure will take a few minutes to deploy.  When complete you should see:
+
+![](./img/deployed.png)
+
+To view OpsCenter, the DataStax admin interface, we will need to create an ssh tunnel.  To do that, open a terminal on your local machine and run the command:
+
+    gcloud compute ssh --ssh-flag=-L8888:localhost:8888 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f datastax-enterprise-1-opscenter-vm 
+
+In my case, the project is named datastax-dev, though it will have a different name for you.
+
+![](./img/tunnel.png)
+
+Now, we can open a web browser to http://localhost:8888 to view OpsCenter.
+
+![](./img/opscenter.png)
+
+Great!  You now have a DataStax Enterprise cluster running with 3 nodes in Asia, Europe and America.
+
+We can also log into a node to interact with the database.  To do that go back to the Google console.
+
+![](./img/nodes.png)
+
+Click on any node.  In DataStax Enterprise the nodes are homogeneous so we can interact with any one.
+
+![](./img/node.png)
+
+We can connect to that node by clicking "SSH."  This will open an SSH window.
+
+![](./img/terminal.png)
+
+At this point we can clear the terminal window and start up cqlsh, the command line interface to DataStax Enterprise.
+
+    clear
+    cqlsh
+
+![](./img/cqlsh.png)
+
+From there you can issue any valid cql command.  For instance:
+
+    desc keyspace
+    
+![](./img/desc.png)
+    
+## Deleting a Deployment
 
 Deployments can be deleted via the command line or the web UI. To use the command line type the command:
 
-gcloud deployment-manager deployments delete ben1
+    gcloud deployment-manager deployments delete ben1
 
-Running from the command line, I see the following output;
+Running from the command line, I see the following output:
 
+![](./img/deletedeployment.png)
 
+## Next Steps
 
-To delete the deployment in the web UI, click the trash can icon on the "Deployment Manager" page as show below:
+If you want to learn more about DataStax Enterprise, the online training courses at https://academy.datastax.com/ are a great place to start.
 
-
-
-3 Conclusion
-
-This document covers the basics of getting up and running with DataStax Enterprise in GCP.  If you have questions or comments please direct those to ben.lackey@datastax.com or @benofben.
+To learn more about running DataStax Enterprise on GCP take a look at the [bestpractices guide](bestpractices.md) and [post deploy steps](postdeploy.md).
