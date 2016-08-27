@@ -3,28 +3,6 @@ import yaml
 import common
 import default
 
-def GenerateFirewall(context):
-    name = context.env['deployment'] + '-opscenter-firewall'
-    firewalls = [
-        {
-            'name': name,
-            'type': 'compute.v1.firewall',
-            'properties': {
-                'network': common.MakeGlobalComputeLink(context, default.NETWORK),
-                'sourceRanges': [
-                    '0.0.0.0/0'
-                ],
-                'allowed': [{
-                    'IPProtocol': 'tcp',
-                    'ports': ['8888', '8443']
-                }]
-            }
-        }
-    ]
-
-    return firewalls
-
-
 def GetZonesList(context):
     zones = []
     if context.properties['usEast1b']:
@@ -177,7 +155,6 @@ def GenerateConfig(context):
 
     config['resources'].append(zonal_clusters)
     config['resources'].append(opscenter_node)
-    config['resources'].extend(GenerateFirewall(context))
 
     first_enterprise_node_name = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm'
     outputs = [
