@@ -67,47 +67,13 @@ We’re going to start of by creating a new deployment. I’m going to call mine
     clear
     ./deploy.sh ben1
 
-When I do that, I see the following output:
+Once that completes, I see the following output:
 
 ![](./img/deploy.png)
 
 At this point, the physical resources on GCE have all provisioned. However, each machine has a script that runs and installs Java as well as provisioning DSE. That will take another few minutes to run.
 
-## Inspecting the Deployment
-
-The easiest way to inspect output is in the web interface. You can access this at http://cloud.google.com.  Once logged in, click on "my console." If you click the three horizontal lines in the upper left and scroll down, you should see an option under "Tools" titled "Deployment Manager." Click that.
-
-
-
-Now, click on your deployment and view the tree describing it:
-
-
-
-The ben1-opscenter-vm is the machine running our instance of OpsCenter. I’m going to click select that and click "Manage Resource."
-
-
-
-Scrolling down, I see the external ip for the OpsCenter machine. Enter that IP into your url bar and add ":8888" to access OpsCenter on port 8888. If you do this relatively quickly after deployment, all nodes might not yet be available.  It's also possible you will see an error stating agents can't connect as shown below.  Dismiss that.  To resolve it permanently, you may need to ssh into the opscenter box and run the command:
-
-sudo service restart opscenterd
-
-
-If the cluster build completes successfully, you should see the following if you used clusterParameters.small.yaml as input:
-
-Clicking on the nodes button, we can now see a graphical view of the cluster topology:
-
-
-
-At this point you have a running DSE cluster! You can ssh into any of the nodes using Google ssh console and begin working with DSE.  The OpsCenter node does not run DSE, only the OpsCenter administrator interface.  To do that click on any of the nodes in the Google Console and click ssh.  A window will open showing an SSH console.  Interesting commands to get your started include:
-
-nodetool status
-cqlsh
-
 ## Inspecting the Cluster
-
-The infrastructure will take a few minutes to deploy.  When complete you should see:
-
-![](./img/deployed.png)
 
 To view OpsCenter, the DataStax admin interface, we will need to create an ssh tunnel.  To do that, open a terminal on your local machine and run the command:
 
