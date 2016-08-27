@@ -79,7 +79,7 @@ To view OpsCenter, the DataStax admin interface, we will need to create an ssh t
 
     gcloud compute ssh --ssh-flag=-L8888:localhost:8888 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f <NAME OF YOUR DEPLOYMENT>-opscenter-vm 
 
-In my case, the project is named datastax-dev, though it will have a different name for you.
+In my case, the project is named datastax-dev and the deployment is named ben1, though it will have a different name for you.
 
 ![](./img/tunnel.png)
 
