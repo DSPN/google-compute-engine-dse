@@ -154,10 +154,6 @@ Deployments can be deleted via the command line or the web UI. To use the comman
 
     gcloud deployment-manager deployments delete ben1
 
-Running from the command line, I see the following output:
-
-![](./img/deletedeployment.png)
-
 ## Next Steps
 
 If you want to learn more about DataStax Enterprise, the online training courses at https://academy.datastax.com/ are a great place to start.

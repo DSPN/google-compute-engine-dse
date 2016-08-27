@@ -11,5 +11,5 @@ resources:
     - asia-east1-a
     machineType: n1-standard-2
     nodesPerZone: 3
-    diskSize: 20
+    diskSize: 10
     opsCenterZone: us-central1-f
