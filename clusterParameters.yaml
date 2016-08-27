@@ -12,4 +12,4 @@ resources:
     machineType: n1-standard-2
     nodesPerZone: 3
     diskSize: 10
-    opsCenterZone: us-central1-a
+    opsCenterZone: us-central1-f

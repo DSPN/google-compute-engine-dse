@@ -1,8 +1,5 @@
 import yaml
 
-import common
-import default
-
 def GetZonesList(context):
     zones = []
     if context.properties['usEast1b']:

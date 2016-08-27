@@ -2,7 +2,6 @@
 
 ### gcloud commands to copy the disk from our dev project to our public project
 
-
 #### 1.
 # Create a disk from the existing image (datastax-ubuntu-1404-trusty-v20160808) in dev project.
 # gcloud compute disks create DISK_NAME --image IMAGE_FROM_DEV_PROJECT --image-project DEV_PROJECT_NAME --project PROD_PROJECT --size 50  --zone us-central1-a
