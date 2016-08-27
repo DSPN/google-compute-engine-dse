@@ -52,7 +52,7 @@ This is an extremely simple shell script that invokes the Google Cloud SDK. It t
 
 ![](./img/catclusterparameters.png)
 
-This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 20GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
+This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 10GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
 
 Two example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request you core quotas be increased to run it.
 
