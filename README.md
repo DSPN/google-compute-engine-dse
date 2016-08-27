@@ -124,4 +124,4 @@ Deployments can be deleted via the command line or the web UI. To use the comman
 
 If you want to learn more about DataStax Enterprise, the online training courses at https://academy.datastax.com/ are a great place to start.
 
-To learn more about running DataStax Enterprise on GCP take a look at the [bestpractices guide](bestpractices.md) and [post deploy steps](postdeploy.md).
+To learn more about running DataStax Enterprise on GCP take a look at the [best practices guide](bestpractices.md) and [post deploy steps](postdeploy.md).
