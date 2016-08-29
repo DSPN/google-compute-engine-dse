@@ -65,16 +65,13 @@ def GenerateConfig(context):
         data_center_name=$zone
         opscenter_dns_name=''' + opscenter_dns_name + '''
 
-        dse_version=5.0.1-1
-
         echo "Configuring nodes with the settings:"
         echo cloud_type $cloud_type
         echo seed_nodes_dns_names $seed_nodes_dns_names
         echo data_center_name $data_center_name
         echo opscenter_dns_name $opscenter_dns_name
-        echo dse_version $dse_version
 
-        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name $opscenter_dns_name $dse_version
+        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name $opscenter_dns_name
         '''
 
     zonal_clusters = {
