@@ -10,6 +10,6 @@ resources:
     - europe-west1-b
     - asia-east1-a
     machineType: n1-standard-2
-    nodesPerZone: 3
+    nodesPerZone: 75
     diskSize: 10
     opsCenterZone: us-central1-f
