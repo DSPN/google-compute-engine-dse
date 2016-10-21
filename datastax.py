@@ -1,5 +1,6 @@
 import yaml
 
+
 def GetZonesList(context):
     zones = []
     if context.properties['usEast1b']:
@@ -37,12 +38,13 @@ def GenerateConfig(context):
 
     # Set zones list based on zone booleans.
     if ('zones' not in context.properties or len(context.properties['zones']) == 0):
-      context.properties['zones'] = GetZonesList(context)
+        context.properties['zones'] = GetZonesList(context)
 
     # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
     context.properties['zone'] = context.properties['opsCenterZone']
 
-    seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env['project'] + '.internal'
+    seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env[
+        'project'] + '.internal'
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
     opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal'
 
