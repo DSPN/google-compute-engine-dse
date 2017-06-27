@@ -42,38 +42,90 @@ def GenerateConfig(context):
 
     # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
     context.properties['zone'] = context.properties['opsCenterZone']
+    cluster_name = 'clusters-' + context.env['name']
+    sshkey_bucket = context.env['deployment'] + '-ssh-pub-key-bucket'
 
+    dc_size = context.properties['nodesPerZone']
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env[
         'project'] + '.internal'
+
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
-    opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal'
+    opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal.'
+
+
+    ssh_pub_key_bucket = {
+        'name': sshkey_bucket,
+        'type': 'storage.v1.bucket',
+        'properties': {
+            'name': sshkey_bucket,
+        }
+    }    
+    config['resources'].append(ssh_pub_key_bucket)
 
     dse_node_script = '''
         #!/usr/bin/env bash
 
         mkdir /mnt
         /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
+        mkdir -p /mnt/data1
+        mkdir -p /mnt/data1/data
+        mkdir -p /mnt/data1/saved_caches
+        mkdir -p /mnt/data1/commitlog
+        chmod -R 777 /mnt/data1
 
-        apt-get -y install unzip
+        ##### Install DSE the LCM way
+        apt-get update
+        apt-get -y install unzip python python-setuptools python-pip
+        pip install requests
 
-        wget https://github.com/DSPN/install-datastax-ubuntu/archive/master.zip
-        unzip master.zip
-        cd install-datastax-ubuntu-master/bin
-
-        cloud_type="gce"
-        seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
+        public_ip=`curl --retry 10 icanhazip.com`
+        private_ip=`echo $(hostname -I)`
+        node_id=$private_ip
+        cluster_name=''' + cluster_name + '''
+        rack="rack1"
+        db_pwd="datastax1!"
 
         zone=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/zone" | grep -o [[:alnum:]-]*$)
         data_center_name=$zone
+
+        # Retrieve internal OPSC IP address
         opscenter_dns_name=''' + opscenter_dns_name + '''
+        opsc_ip=`dig +short $opscenter_dns_name`
 
-        echo "Configuring nodes with the settings:"
-        echo cloud_type $cloud_type
-        echo seed_nodes_dns_names $seed_nodes_dns_names
-        echo data_center_name $data_center_name
-        echo opscenter_dns_name $opscenter_dns_name
+        dcsize=''' + str(dc_size) + '''
+        
+        echo opscenter_dns_name = $opscenter_dns_name
+        echo opsc_ip = $opsc_ip
+        echo dcsize = $dcsize
 
-        ./dse.sh $cloud_type $seed_nodes_dns_names $data_center_name $opscenter_dns_name
+        # Grab lcm_pem.pub pubilc key from Google Cloud Storage
+        pushd ~ubuntu/.ssh/
+        sshkey_bucket=''' + sshkey_bucket + '''
+        gsutil cp gs://$sshkey_bucket/lcm_pem.pub .
+        while [ $? -ne 0 ]
+        do
+            sleep 1s
+            gsutil cp gs://$sshkey_bucket/lcm_pem.pub . 
+        done
+        chown ubuntu:ubuntu lcm_pem.pub
+        cat lcm_pem.pub >> authorized_keys
+        popd
+
+        cd ~ubuntu
+        wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.5.3.zip
+        unzip 5.5.3.zip
+        cd install-datastax-ubuntu-5.5.3/bin/lcm/
+
+        ./addNode.py \
+        --opsc-ip $opsc_ip \
+        --clustername $cluster_name \
+        --dcsize $dcsize \
+        --dcname $data_center_name \
+        --rack $rack \
+        --pubip $private_ip \
+        --privip $private_ip \
+        --nodeid $node_id \
+        --dbpasswd $db_pwd
         '''
 
     zonal_clusters = {
@@ -119,12 +171,39 @@ def GenerateConfig(context):
       cd install-datastax-ubuntu-master/bin
 
       cloud_type="gce"
-      seed_nodes_dns_names=''' + seed_nodes_dns_names + '''
-      echo "Configuring nodes with the settings:"
-      echo cloud_type $cloud_type
-      echo seed_nodes_dns_names $seed_nodes_dns_names
-      ./opscenter.sh $cloud_type $seed_nodes_dns_names
-    '''
+      ./os/install_java.sh
+      ./opscenter/install.sh $cloud_type
+      ./opscenter/start.sh
+
+      # Generate lcm_pem private and pubilc keys
+      pushd ~ubuntu/.ssh/
+      ssh-keygen -t rsa -N '' -f lcm_pem
+      chown ubuntu:ubuntu lcm_pem*
+      privkey=$(readlink -f ~ubuntu/.ssh/lcm_pem)
+      sshkey_bucket=''' + sshkey_bucket + '''
+      gsutil cp ./lcm_pem.pub gs://$sshkey_bucket/
+      popd
+
+      ## Set up cluster in OpsCenter the LCM way
+      cd ~ubuntu
+      wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.5.3.zip
+      unzip 5.5.3.zip
+      cd install-datastax-ubuntu-5.5.3/bin/lcm/
+
+      # Generate cluster name
+      cluster_name=''' + cluster_name + '''
+
+      # Retrieve OpsCenter's public IP address
+      private_ip=`echo $(hostname -I)`
+      
+      sleep 1m
+
+      ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1
+      
+      #sleep 3m
+      # gsutil rm gs://$sshkey_bucket/lcm_pem.pub
+  
+      '''
 
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
     opscenter_node = {
@@ -139,7 +218,7 @@ def GenerateConfig(context):
             'bootDiskType': 'pd-standard',
             'serviceAccounts': [{
                 'email': 'default',
-                'scopes': ['https://www.googleapis.com/auth/compute']
+                'scopes': ['https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/devstorage.full_control']
             }],
             'metadata': {
                 'items': [
