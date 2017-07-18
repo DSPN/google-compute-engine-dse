@@ -45,13 +45,22 @@ def GenerateConfig(context):
     cluster_name = 'clusters-' + context.env['name']
     sshkey_bucket = context.env['deployment'] + '-ssh-pub-key-bucket'
 
+    # Set cassandra's user password
+    db_pwd = context.properties['cassandraPwd']
+
+    # Set DataStax Academy credentials
+    dsa_username = context.properties['dsa_username']
+    dsa_password = context.properties['dsa_password']
+
+    # Set DC size, number of DCs and cluster's size
     dc_size = context.properties['nodesPerZone']
+    num_dcs = len(context.properties['zones'])
+    cluster_size = dc_size * num_dcs
+
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env[
         'project'] + '.internal'
-
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
     opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal.'
-
 
     ssh_pub_key_bucket = {
         'name': sshkey_bucket,
@@ -83,7 +92,7 @@ def GenerateConfig(context):
         node_id=$private_ip
         cluster_name=''' + cluster_name + '''
         rack="rack1"
-        db_pwd="datastax1!"
+        db_pwd=''' + db_pwd + '''
 
         zone=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/zone" | grep -o [[:alnum:]-]*$)
         data_center_name=$zone
@@ -94,10 +103,6 @@ def GenerateConfig(context):
 
         dcsize=''' + str(dc_size) + '''
         
-        echo opscenter_dns_name = $opscenter_dns_name
-        echo opsc_ip = $opsc_ip
-        echo dcsize = $dcsize
-
         # Grab lcm_pem.pub pubilc key from Google Cloud Storage
         pushd ~ubuntu/.ssh/
         sshkey_bucket=''' + sshkey_bucket + '''
@@ -112,9 +117,13 @@ def GenerateConfig(context):
         popd
 
         cd ~ubuntu
-        wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.5.3.zip
-        unzip 5.5.3.zip
-        cd install-datastax-ubuntu-5.5.3/bin/lcm/
+        release="master"
+        wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
+        unzip $release.zip
+        cd install-datastax-ubuntu-$release/bin/lcm/
+
+        # Set dcsize to 199 (a very big number) as interim solution to avoid race condition
+        dcsize=199
 
         ./addNode.py \
         --opsc-ip $opsc_ip \
@@ -186,22 +195,40 @@ def GenerateConfig(context):
 
       ## Set up cluster in OpsCenter the LCM way
       cd ~ubuntu
-      wget https://github.com/DSPN/install-datastax-ubuntu/archive/5.5.3.zip
-      unzip 5.5.3.zip
-      cd install-datastax-ubuntu-5.5.3/bin/lcm/
+      release="master"
+      wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
+      unzip $release.zip
+      cd install-datastax-ubuntu-$release/bin/lcm/
 
       # Generate cluster name
       cluster_name=''' + cluster_name + '''
+
+      # Generate number of DCs 
+      num_dcs=''' + str(num_dcs) + '''
+
+      # Generate cluster size
+      cluster_size=''' + str(cluster_size) + '''
+     
+      # Generate cassandra user's password
+      db_pwd=''' + db_pwd + '''
+
+      # Generate DataStax Academy credentials
+      dsa_username=''' + dsa_username + '''
+      dsa_password=''' + dsa_password + '''
 
       # Retrieve OpsCenter's public IP address
       private_ip=`echo $(hostname -I)`
       
       sleep 1m
 
-      ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1
-      
-      #sleep 3m
-      # gsutil rm gs://$sshkey_bucket/lcm_pem.pub
+      ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1 --repouser $dsa_username --repopw $dsa_password
+
+      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dbpasswd $db_pwd   --dclevel 
+    
+      ./waitForJobs.py --num $num_dcs --opsc-ip $private_ip 
+
+      # Remove public key from Google cloud storage bucket
+      gsutil rm gs://$sshkey_bucket/lcm_pem.pub
   
       '''
 
