@@ -58,10 +58,11 @@ def GenerateConfig(context):
     cluster_size = dc_size * num_dcs
 
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env[
-        'project'] + '.internal'
+        'project'] + '.internal.'
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
     opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal.'
 
+    # Prepare a storage bucket to store our randomly generated SSH key pair for LCM's DSE install
     ssh_pub_key_bucket = {
         'name': sshkey_bucket,
         'type': 'storage.v1.bucket',
@@ -71,6 +72,7 @@ def GenerateConfig(context):
     }    
     config['resources'].append(ssh_pub_key_bucket)
 
+    # Script to run inside a DSE node during instance instantiation
     dse_node_script = '''
         #!/usr/bin/env bash
 
@@ -101,8 +103,6 @@ def GenerateConfig(context):
         opscenter_dns_name=''' + opscenter_dns_name + '''
         opsc_ip=`dig +short $opscenter_dns_name`
 
-        dcsize=''' + str(dc_size) + '''
-        
         # Grab lcm_pem.pub pubilc key from Google Cloud Storage
         pushd ~ubuntu/.ssh/
         sshkey_bucket=''' + sshkey_bucket + '''
@@ -117,7 +117,7 @@ def GenerateConfig(context):
         popd
 
         cd ~ubuntu
-        release="master"
+        release="5.5.6"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
         unzip $release.zip
         cd install-datastax-ubuntu-$release/bin/lcm/
@@ -175,9 +175,10 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      wget https://github.com/DSPN/install-datastax-ubuntu/archive/master.zip
-      unzip master.zip
-      cd install-datastax-ubuntu-master/bin
+      release="5.5.6" 
+      wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
+      unzip $release.zip
+      cd install-datastax-ubuntu-$release/bin
 
       cloud_type="gce"
       ./os/install_java.sh
@@ -193,11 +194,8 @@ def GenerateConfig(context):
       gsutil cp ./lcm_pem.pub gs://$sshkey_bucket/
       popd
 
-      ## Set up cluster in OpsCenter the LCM way
-      cd ~ubuntu
-      release="master"
-      wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
-      unzip $release.zip
+      # Set up cluster in OpsCenter the LCM way
+      cd /
       cd install-datastax-ubuntu-$release/bin/lcm/
 
       # Generate cluster name
@@ -222,9 +220,7 @@ def GenerateConfig(context):
       sleep 1m
 
       ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1 --repouser $dsa_username --repopw $dsa_password
-
-      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dbpasswd $db_pwd   --dclevel 
-    
+      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dbpasswd $db_pwd --dclevel 
       ./waitForJobs.py --num $num_dcs --opsc-ip $private_ip 
 
       # Remove public key from Google cloud storage bucket
