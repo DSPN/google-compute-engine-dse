@@ -16,11 +16,11 @@ If you haven't already, you will also need to create a GCP project.  That can be
 
 After creating the project, set it as the default project that gcloud will use with the command:
 
-    gcloud config set project myproject
+    gcloud config set project <myproject>
 
 ## Clone and Investigate the Template Repo
 
-Now that you have the gcloud tools installed, you’ll want to clone of copy of the template repo.  The GCE repo is here: https://github.com/DSPN/google-compute-engine-dse
+Now that you have the gcloud tools installed, you’ll want to clone a copy of the template repo.  The GCE repo is here: https://github.com/DSPN/google-compute-engine-dse
 
 To clone it use the command:
 
@@ -30,7 +30,7 @@ If all went well, output should look something like this:
 
 ![](./img/gitclone.png)
 
-Now cd into the repo dir and list files there using the commands:
+Now cd into the repo directory and list files there using the commands:
 
     clear
     cd google-compute-engine-dse
@@ -45,7 +45,7 @@ Our main entry point is a file called deploy.sh. We can inspect that file using 
 
 ![](./img/catdeploy.png)
 
-This is an extremely simple shell script that invokes the Google Cloud SDK. It takes one argument, the name of the deployment. The deployment name needs to be unique within you project. The deploy.sh script also depends on the input file clusterParameters.yaml. This file defines our cluster topology. Let’s take a quick look with the following commands:
+This is an extremely simple shell script that invokes the Google Cloud SDK. It takes one argument, the name of the deployment. The deployment name needs to be unique within your project. The deploy.sh script also depends on the input file clusterParameters.yaml. This file defines our cluster topology. Let’s take a quick look with the following commands:
 
     clear
     cat clusterParameters.yaml
@@ -54,9 +54,9 @@ This is an extremely simple shell script that invokes the Google Cloud SDK. It t
 
 This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 30GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
 
-Specifically, you can either use our default password `datastax1!` for the "cassandra" user or choose your own password by updating the value for the `cassandraPwd` field.  You will need to provide your DataStax Academy username and password for the `dsa_username` and `dsa_password` fields respectively to execute your template.  If you do not have an account at academy.datastax.com, you can create one now.  It is free!
+Specifically, you can either use our default password `datastax1!` for the "cassandra" user or choose your own password by updating the value of the `cassandraPwd` field.  You will need to provide your DataStax Academy username and password for the `dsa_username` and `dsa_password` fields respectively in order to execute your template.  If you do not have an account at academy.datastax.com, you can create one now.  It is free!
 
-Two example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request you core quotas be increased to run it.
+Two additional example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request your core quotas be increased to run it.
 
 We encourage you to look at the templates more and better understand what they’re doing. They are provided to get you started and we fully expect you to customize them in ways that suit your needs.
 
@@ -64,7 +64,7 @@ Now that we’ve had a look through the project, let’s try running it!
 
 ## Create a Deployment
 
-We’re going to start of by creating a new deployment. I’m going to call mine `gml`. To create it, I’m going to enter the command:
+We’re going to start off by creating a new deployment. I’m going to call mine `gml`. To create it, I’m going to enter the command:
 
     clear
     ./deploy.sh gml
@@ -73,7 +73,7 @@ Once that completes, I see the following output:
 
 ![](./img/deploy.png)
 
-At this point, the physical resources on GCE have all provisioned. However, each machine has a script that runs and installs Java as well as provisioning DSE. That will take another few minutes to run.
+At this point, the physical resources on GCE have all provisioned. However, each machine has a script that runs and installs Java as well as provisioning DSE. That will take additional 10 to 15 minutes to run.
 
 ## Inspecting the Cluster
 
@@ -91,7 +91,7 @@ Now, we can open a web browser to http://localhost:8888 to view OpsCenter.
 
 Great!  You now have a DataStax Enterprise cluster running with 3 nodes in Asia, Europe and America.
 
-We can also log into a node to interact with the database.  To do that go back to the Google console.
+We can also log into a node to interact with the database.  To do that go back to the Google Cloud console.
 
 ![](./img/nodes.png)
 
