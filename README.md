@@ -52,7 +52,7 @@ This is an extremely simple shell script that invokes the Google Cloud SDK. It t
 
 ![](./img/catclusterparameters.png)
 
-This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 10GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
+This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 30GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
 
 Two example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request you core quotas be increased to run it.
 
@@ -79,7 +79,7 @@ To view OpsCenter, the DataStax admin interface, we will need to create an ssh t
 
     gcloud compute ssh --ssh-flag=-L8888:localhost:8888 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f <NAME OF YOUR DEPLOYMENT>-opscenter-vm 
 
-In my case, the project is named fieldops-gce-presales and the deployment is named gml, though it will have a different name for you.
+In my case, the project is named `fieldops-gce-presales` and the deployment is named `gml`, though it will have a different name for you.
 
 ![](./img/tunnel.png)
 
