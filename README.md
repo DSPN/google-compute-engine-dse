@@ -62,7 +62,7 @@ Now that we’ve had a look through the project, let’s try running it!
 
 ## Create a Deployment
 
-We’re going to start of by creating a new deployment. I’m going to call mine gml. To create it, I’m going to enter the command:
+We’re going to start of by creating a new deployment. I’m going to call mine `gml`. To create it, I’m going to enter the command:
 
     clear
     ./deploy.sh gml
@@ -79,7 +79,7 @@ To view OpsCenter, the DataStax admin interface, we will need to create an ssh t
 
     gcloud compute ssh --ssh-flag=-L8888:localhost:8888 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f <NAME OF YOUR DEPLOYMENT>-opscenter-vm 
 
-In my case, the project is named datastax-dev and the deployment is named ben1, though it will have a different name for you.
+In my case, the project is named fieldops-gce-presales and the deployment is named gml, though it will have a different name for you.
 
 ![](./img/tunnel.png)
 
@@ -104,7 +104,7 @@ We can connect to that node by clicking "SSH."  This will open an SSH window.
 At this point we can clear the terminal window and start up cqlsh, the command line interface to DataStax Enterprise.
 
     clear
-    cqlsh
+    cqlsh -u cassandra -p datastax1!
 
 ![](./img/cqlsh.png)
 
@@ -118,7 +118,7 @@ From there you can issue any valid cql command.  For instance:
 
 Deployments can be deleted via the command line or the web UI. To use the command line type the command:
 
-    gcloud deployment-manager deployments delete ben1
+    gcloud deployment-manager deployments delete gml
 
 ## Next Steps
 
