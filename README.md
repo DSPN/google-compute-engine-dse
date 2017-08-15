@@ -54,6 +54,8 @@ This is an extremely simple shell script that invokes the Google Cloud SDK. It t
 
 This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 30GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
 
+Specifically, you can either use our default password `datastax1!` for the "cassandra" user or choose your own password by updating the value for the `cassandraPwd` field.  You will need to provide your DataStax Academy username and password for the `dsa_username` and `dsa_password` fields respectively to execute your template.  If you do not have an account at academy.datastax.com, you can create one now.  It is free!
+
 Two example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request you core quotas be increased to run it.
 
 We encourage you to look at the templates more and better understand what they’re doing. They are provided to get you started and we fully expect you to customize them in ways that suit your needs.
