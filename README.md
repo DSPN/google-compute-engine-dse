@@ -62,10 +62,10 @@ Now that we’ve had a look through the project, let’s try running it!
 
 ## Create a Deployment
 
-We’re going to start of by creating a new deployment. I’m going to call mine gml1. To create it, I’m going to enter the command:
+We’re going to start of by creating a new deployment. I’m going to call mine gml. To create it, I’m going to enter the command:
 
     clear
-    ./deploy.sh gml1
+    ./deploy.sh gml
 
 Once that completes, I see the following output:
 
