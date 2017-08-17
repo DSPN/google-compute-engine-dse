@@ -112,7 +112,7 @@ At this point we can clear the terminal window and start up cqlsh, the command l
 
 From there you can issue any valid cql command.  For instance:
 
-    desc keyspace
+    desc keyspaces
     
 ![](./img/desc.png)
     
