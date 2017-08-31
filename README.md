@@ -4,6 +4,11 @@ This is a Google Deployment Manager template for Google Compute Engine (GCE) tha
 
 The [DataStax Enterprise Deployment Guide for Google](https://github.com/DSPN/google-deployment-guide) provides background on best practices in Google Cloud Platform (GCP) as well as instructions on using Google Cloud Launcher.  Cloud Launcher is Google's graphical tool for creating deployments.  This template is used in our Cloud Launcher deployment.
 
+## Disclaimer
+The use of this repo is intended for development purpose only.  Usage of this repo is solely at user’s own risks.  There is no SLAs around any issues posted on this repo.  Internal prioritization of repo issues will be processed by the owners of this repo periodically.  There is no association with any technical support subscription from DataStax.
+
+The use of DataStax software is free in development. Deploying and running DataStax software on a cloud provider will incur costs associated with the underlying cloud provider’s resources such as compute, network and storage, etc.  Please refer to your cloud provider for effective cloud resources pricing.
+
 # Deploying to Google Cloud Platform (GCP)
 
 ## Set up GCP Prerequisites
