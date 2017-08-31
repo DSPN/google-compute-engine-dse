@@ -78,7 +78,7 @@ Once that completes, I see the following output:
 
 ![](./img/deploy.png)
 
-At this point, the physical resources on GCE have all provisioned. However, each machine has a script that runs and installs Java as well as provisioning DSE. That will take additional 10 to 15 minutes to run.
+At this point, the physical resources on GCE have all provisioned. DataStax Enterprise OpsCenter LifeCycle Manager (LCM) will continue provisioning DSE nodes. That will typically take additional 20 minutes or more to deploy a 9-node DSE cluster spanning 3 GCE zones. The actual deployment time is subject to the size of your cluster.
 
 ## Inspecting the Cluster
 
