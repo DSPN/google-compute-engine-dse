@@ -90,7 +90,6 @@ In my case, the project is named `fieldops-gce-presales` and the deployment is n
 
 ![](./img/tunnel.png)
 
-OpsCenter uses a self-signed SSL certificate, so you will need to accept the certificate exception. 
 Now, we can open a web browser to https://localhost:8443 and log into OpsCenter using "admin" as Username and the value of opsCenterAdminPwd in clusterParameters.yaml as Password. *The OpsCenter instance uses a self-signed SSL certificate, so you will need to accept the certificate exception before you can see the OpsCenter's login page.* 
 
 ![](./img/pre_opscenter.png)
