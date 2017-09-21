@@ -52,6 +52,9 @@ def GenerateConfig(context):
     dsa_username = context.properties['dsa_username']
     dsa_password = context.properties['dsa_password']
 
+    # Set default OpsCenter Admin password
+    opsc_admin_pwd = context.properties['opsCenterAdminPwd']
+
     # Set DC size, number of DCs and cluster's size
     dc_size = context.properties['nodesPerZone']
     num_dcs = len(context.properties['zones'])
@@ -117,24 +120,19 @@ def GenerateConfig(context):
         popd
 
         cd ~ubuntu
-        release="5.5.6"
+        release="6.0.0"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
         unzip $release.zip
         cd install-datastax-ubuntu-$release/bin/lcm/
 
-        # Set dcsize to 199 (a very big number) as interim solution to avoid race condition
-        dcsize=199
-
         ./addNode.py \
         --opsc-ip $opsc_ip \
         --clustername $cluster_name \
-        --dcsize $dcsize \
         --dcname $data_center_name \
         --rack $rack \
         --pubip $private_ip \
         --privip $private_ip \
         --nodeid $node_id \
-        --dbpasswd $db_pwd
         '''
 
     zonal_clusters = {
@@ -175,7 +173,7 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      release="5.5.6" 
+      release="6.0.0" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
       unzip $release.zip
       cd install-datastax-ubuntu-$release/bin
@@ -222,6 +220,15 @@ def GenerateConfig(context):
       ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1 --repouser $dsa_username --repopw $dsa_password
       ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dbpasswd $db_pwd --dclevel 
       ./waitForJobs.py --num $num_dcs --opsc-ip $private_ip 
+
+      # Alter required keyspaces for multi-DC
+      ./alterKeyspaces.py
+
+      # Update password for default DSE OpsCenter administrator (admin)
+      # opsCenterAdminPwd
+      opsc_admin_pwd=''' + opsc_admin_pwd + '''
+      cd ../opscenter
+      ./set_opsc_pw_https.sh $opsc_admin_pwd
 
       # Remove public key from Google cloud storage bucket
       gsutil rm gs://$sshkey_bucket/lcm_pem.pub

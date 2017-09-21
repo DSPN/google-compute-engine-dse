@@ -84,14 +84,16 @@ At this point, the physical resources on GCE have all provisioned. DataStax Ente
 
 To view OpsCenter, the DataStax admin interface, we will need to create an ssh tunnel.  To do that, open a terminal on your local machine and run the command:
 
-    gcloud compute ssh --ssh-flag=-L8888:localhost:8888 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f <NAME OF YOUR DEPLOYMENT>-opscenter-vm 
+    gcloud compute ssh --ssh-flag=-L8443:localhost:8443 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f <NAME OF YOUR DEPLOYMENT>-opscenter-vm 
 
 In my case, the project is named `fieldops-gce-presales` and the deployment is named `gml`, though it will have a different name for you.
 
 ![](./img/tunnel.png)
 
-Now, we can open a web browser to http://localhost:8888 to view OpsCenter.
+OpsCenter uses a self-signed SSL certificate, so you will need to accept the certificate exception. 
+Now, we can open a web browser to https://localhost:8443 and log into OpsCenter using "admin" as Username and the value of opsCenterAdminPwd in clusterParameters.yaml as Password. *The OpsCenter instance uses a self-signed SSL certificate, so you will need to accept the certificate exception before you can see the OpsCenter's login page.* 
 
+![](./img/pre_opscenter.png)
 ![](./img/opscenter.png)
 
 Great!  You now have a DataStax Enterprise cluster running with 3 nodes in Asia, Europe and America.
