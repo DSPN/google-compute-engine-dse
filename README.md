@@ -64,7 +64,7 @@ This config is going to create 3 nodes in each of 3 different regions, for a tot
 
 Specifically, you can either use our default password `datastax1!` for the "cassandra" user or choose your own password by updating the value of the `cassandraPwd` field.  You will need to provide your DataStax Academy username and password for the `dsa_username` and `dsa_password` fields respectively in order to execute your template.  If you do not have an account at academy.datastax.com, you can create one now.  It is free!
 
-There is a field named opsCenterAdminPwd to define a custom password for OpsCenter's Username: "admin".  It has been defaulted to "opscenter1!" in our sample clusterParameters.yaml template.  
+There is also a field named opsCenterAdminPwd to define a custom password for OpsCenter's Username: "admin".  It has been defaulted to "opscenter1!" in our sample clusterParameters.yaml template.  
 
 Two additional example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request your core quotas be increased to run it.
 
