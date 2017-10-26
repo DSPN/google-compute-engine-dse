@@ -80,7 +80,8 @@ def GenerateConfig(context):
         #!/usr/bin/env bash
 
         mkdir /mnt
-        /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
+        mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-${HOSTNAME}-data-disk
+        mount -o discard,defaults /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
         mkdir -p /mnt/data1
         mkdir -p /mnt/data1/data
         mkdir -p /mnt/data1/saved_caches
@@ -120,7 +121,7 @@ def GenerateConfig(context):
         popd
 
         cd ~ubuntu
-        release="6.0.0"
+        release="6.0.1"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
         unzip $release.zip
         cd install-datastax-ubuntu-$release/bin/lcm/
@@ -139,7 +140,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-ubuntu-1404-trusty-v20160808',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1404-trusty-v20170918',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
@@ -157,6 +158,7 @@ def GenerateConfig(context):
                 }
             ],
             'bootDiskType': 'pd-standard',
+            'bootDiskSizeGb': 20,
             'metadata': {
                 'items': [
                     {
@@ -173,7 +175,7 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      release="6.0.0" 
+      release="6.0.1" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
       unzip $release.zip
       cd install-datastax-ubuntu-$release/bin
@@ -241,7 +243,7 @@ def GenerateConfig(context):
         'type': 'vm_instance.py',
         'properties': {
             'instanceName': opscenter_node_name,
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-ubuntu-1404-trusty-v20160808',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1404-trusty-v20170918',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],

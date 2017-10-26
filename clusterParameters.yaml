@@ -11,6 +11,7 @@ resources:
     - asia-east1-a
     machineType: n1-standard-2
     nodesPerZone: 3
+    dataDiskType: pd-ssd
     diskSize: 60
     opsCenterZone: us-central1-f
     cassandraPwd: datastax1!
