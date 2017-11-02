@@ -1,4 +1,4 @@
-###Procedure to create custom Ubuntu image for DataStax Enteprise Google Launcher solution based on Google's stock image: ubuntu-1404-trusty-v20171026
+### Procedure to create custom Ubuntu image for DataStax Enteprise Google Launcher solution based on Google's stock image: ubuntu-1404-trusty-v20171026
 
 *Run % gcloud init (make sure to use datastax-public project)
 *Run % git clone https://github.com/DSPN/google-compute-engine-dse
