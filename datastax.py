@@ -140,7 +140,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1404-trusty-v20170918',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20171026',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
@@ -243,7 +243,7 @@ def GenerateConfig(context):
         'type': 'vm_instance.py',
         'properties': {
             'instanceName': opscenter_node_name,
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-1404-trusty-v20170918',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20171026',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
