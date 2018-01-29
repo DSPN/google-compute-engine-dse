@@ -1,5 +1,6 @@
 import yaml
-
+import random
+import string
 
 def GetZonesList(context):
     zones = []
@@ -43,7 +44,10 @@ def GenerateConfig(context):
     # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
     context.properties['zone'] = context.properties['opsCenterZone']
     cluster_name = 'clusters-' + context.env['name']
-    sshkey_bucket = context.env['deployment'] + '-ssh-pub-key-bucket'
+
+    # Generate a random bucket name
+    bucket_suffix = ''.join([random.choice(string.ascii_lowercase + string.digits) for n in xrange(10)])
+    sshkey_bucket = context.env['deployment'] + '-ssh-pub-key-bucket-' + bucket_suffix
 
     # Set cassandra's user password
     db_pwd = context.properties['cassandraPwd']
@@ -121,7 +125,7 @@ def GenerateConfig(context):
         popd
 
         cd ~ubuntu
-        release="6.0.1"
+        release="6.0.4"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
         unzip $release.zip
         cd install-datastax-ubuntu-$release/bin/lcm/
@@ -175,7 +179,7 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      release="6.0.1" 
+      release="6.0.4" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
       unzip $release.zip
       cd install-datastax-ubuntu-$release/bin
