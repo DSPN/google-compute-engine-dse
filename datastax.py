@@ -49,6 +49,9 @@ def GenerateConfig(context):
     bucket_suffix = ''.join([random.choice(string.ascii_lowercase + string.digits) for n in xrange(10)])
     sshkey_bucket = context.env['deployment'] + '-ssh-pub-key-bucket-' + bucket_suffix
 
+    # DSE version
+    dse_version = context.properties['dseVersion']
+
     # Set cassandra's user password
     db_pwd = context.properties['cassandraPwd']
 
@@ -125,7 +128,7 @@ def GenerateConfig(context):
         popd
 
         cd ~ubuntu
-        release="6.0.4"
+        release="7.0.0"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
         unzip $release.zip
         cd install-datastax-ubuntu-$release/bin/lcm/
@@ -144,7 +147,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20180110',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20180326',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
@@ -179,7 +182,7 @@ def GenerateConfig(context):
 
       apt-get -y install unzip
 
-      release="6.0.4" 
+      release="7.0.0" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
       unzip $release.zip
       cd install-datastax-ubuntu-$release/bin
@@ -210,7 +213,10 @@ def GenerateConfig(context):
 
       # Generate cluster size
       cluster_size=''' + str(cluster_size) + '''
-     
+    
+      # DSE version
+      dse_version=''' + dse_version + '''
+ 
       # Generate cassandra user's password
       db_pwd=''' + db_pwd + '''
 
@@ -223,8 +229,8 @@ def GenerateConfig(context):
       
       sleep 1m
 
-      ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1 --repouser $dsa_username --repopw $dsa_password
-      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dbpasswd $db_pwd --dclevel 
+      ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1 --repouser $dsa_username --repopw $dsa_password --dbpasswd $db_pwd --dsever $dse_version
+      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dclevel 
       ./waitForJobs.py --num $num_dcs --opsc-ip $private_ip 
 
       # Alter required keyspaces for multi-DC
@@ -247,7 +253,7 @@ def GenerateConfig(context):
         'type': 'vm_instance.py',
         'properties': {
             'instanceName': opscenter_node_name,
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20180110',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20180326',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
