@@ -99,6 +99,7 @@ def GenerateConfig(context):
         apt-get update
         apt-get -y install unzip python python-setuptools python-pip
         pip install requests
+        pip install --upgrade requests
 
         public_ip=`curl --retry 10 icanhazip.com`
         private_ip=`echo $(hostname -I)`
@@ -180,7 +181,10 @@ def GenerateConfig(context):
     opscenter_script = '''
       #!/usr/bin/env bash
 
-      apt-get -y install unzip
+      apt-get update
+      apt-get -y install unzip python-pip
+      pip install requests
+      pip install --upgrade requests
 
       release="7.0.0" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
@@ -230,8 +234,8 @@ def GenerateConfig(context):
       sleep 1m
 
       ./setupCluster.py --user ubuntu --pause 60 --trys 40 --opsc-ip $private_ip --clustername $cluster_name --privkey $privkey --datapath /mnt/data1 --repouser $dsa_username --repopw $dsa_password --dbpasswd $db_pwd --dsever $dse_version
-      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size --dclevel 
-      ./waitForJobs.py --num $num_dcs --opsc-ip $private_ip 
+      ./triggerInstall.py --opsc-ip $private_ip --clustername $cluster_name --clustersize $cluster_size 
+      ./waitForJobs.py --num 1 --opsc-ip $private_ip 
 
       # Alter required keyspaces for multi-DC
       ./alterKeyspaces.py
