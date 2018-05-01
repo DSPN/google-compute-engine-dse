@@ -99,7 +99,6 @@ def GenerateConfig(context):
         apt-get update
         apt-get -y install unzip python python-setuptools python-pip
         pip install requests
-        pip install --upgrade requests
 
         public_ip=`curl --retry 10 icanhazip.com`
         private_ip=`echo $(hostname -I)`
@@ -148,7 +147,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20180326',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180424',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
@@ -184,7 +183,6 @@ def GenerateConfig(context):
       apt-get update
       apt-get -y install unzip python-pip
       pip install requests
-      pip install --upgrade requests
 
       release="7.0.0" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
@@ -257,7 +255,7 @@ def GenerateConfig(context):
         'type': 'vm_instance.py',
         'properties': {
             'instanceName': opscenter_node_name,
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1404-trusty-v20180326',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180424',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
