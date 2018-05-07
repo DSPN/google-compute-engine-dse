@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-INSTANCE=instance-ubuntu-1604-xenial-v20180424
+INSTANCE=instance-ubuntu-1604-xenial-v20180506
 
 # You're going to want to ensure this image is built with the latest 16.04.  To check what that is, run:
 gcloud compute images list
