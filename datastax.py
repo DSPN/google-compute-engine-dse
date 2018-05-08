@@ -96,9 +96,14 @@ def GenerateConfig(context):
         chmod -R 777 /mnt/data1
 
         ##### Install DSE the LCM way
-        apt-get update
-        apt-get install -y unzip python python-setuptools python-pip
-        pip install requests
+        cd ~ubuntu
+        release="7.0.1"
+        wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.tar.gz
+        tar -xvf $release.tar.gz
+        # install extra OS packages
+        pushd install-datastax-ubuntu-$release/bin
+        ./os/extra_packages.sh
+        popd
 
         public_ip=`curl --retry 10 icanhazip.com`
         private_ip=`echo $(hostname -I)`
@@ -115,7 +120,7 @@ def GenerateConfig(context):
         opsc_ip=`dig +short $opscenter_dns_name`
 
         # Grab lcm_pem.pub pubilc key from Google Cloud Storage
-        pushd ~ubuntu/.ssh/
+        cd ~ubuntu/.ssh/
         sshkey_bucket=''' + sshkey_bucket + '''
         gsutil cp gs://$sshkey_bucket/lcm_pem.pub .
         while [ $? -ne 0 ]
@@ -125,13 +130,8 @@ def GenerateConfig(context):
         done
         chown ubuntu:ubuntu lcm_pem.pub
         cat lcm_pem.pub >> authorized_keys
-        popd
 
-        cd ~ubuntu
-        release="7.0.1"
-        wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
-        unzip $release.zip
-        cd install-datastax-ubuntu-$release/bin/lcm/
+        cd ~ubuntu/install-datastax-ubuntu-$release/bin/lcm/
 
         ./addNode.py \
         --opsc-ip $opsc_ip \
@@ -147,7 +147,7 @@ def GenerateConfig(context):
         'name': 'clusters-' + context.env['name'],
         'type': 'regional_multi_vm.py',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180506',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180424',
             'zones': context.properties['zones'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
@@ -180,19 +180,18 @@ def GenerateConfig(context):
     opscenter_script = '''
       #!/usr/bin/env bash
 
-      apt-get update
-      apt-get install -y unzip python-pip
-      pip install requests
-
+      cd ~ubuntu
       release="7.0.1" 
-      wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.zip
-      unzip $release.zip
-      cd install-datastax-ubuntu-$release/bin
-
-      cloud_type="gce"
+      wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.tar.gz
+      tar -xvf $release.tar.gz
+      # install extra OS packages
+      pushd install-datastax-ubuntu-$release/bin
+      ./os/extra_packages.sh
       ./os/install_java.sh
+      cloud_type="gce"
       ./opscenter/install.sh $cloud_type
       ./opscenter/start.sh
+      popd
 
       # Generate lcm_pem private and pubilc keys
       pushd ~ubuntu/.ssh/
@@ -204,8 +203,7 @@ def GenerateConfig(context):
       popd
 
       # Set up cluster in OpsCenter the LCM way
-      cd /
-      cd install-datastax-ubuntu-$release/bin/lcm/
+      cd ~ubuntu/install-datastax-ubuntu-$release/bin/lcm/
 
       # Generate cluster name
       cluster_name=''' + cluster_name + '''
@@ -255,7 +253,7 @@ def GenerateConfig(context):
         'type': 'vm_instance.py',
         'properties': {
             'instanceName': opscenter_node_name,
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180506',
+            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180424',
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
