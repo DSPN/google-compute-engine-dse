@@ -97,7 +97,7 @@ def GenerateConfig(context):
 
         ##### Install DSE the LCM way
         cd ~ubuntu
-        release="7.0.1"
+        release="7.0.2"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.tar.gz
         tar -xvf $release.tar.gz
         # install extra OS packages
@@ -181,7 +181,7 @@ def GenerateConfig(context):
       #!/usr/bin/env bash
 
       cd ~ubuntu
-      release="7.0.1" 
+      release="7.0.2" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.tar.gz
       tar -xvf $release.tar.gz
       # install extra OS packages
