@@ -2,8 +2,8 @@
 
 python image_creator.py \
 --project datastax-public \
---disk instance-ubuntu-1404-trusty-v20180308 \
---name datastax-enterprise-ubuntu-1404-trusty-v20180326 \
---description 'DataStax Enterprise Ubuntu 14.04 (2018/03/26) Image' \
+--disk instance-ubuntu-1604-xenial-v20180506 \
+--name datastax-enterprise-ubuntu-1604-xenial-v20180506 \
+--description 'DataStax Enterprise Ubuntu 16.04 (2018/05/06) Image' \
 --destination-project datastax-public \
 --license datastax-public/datastax-enterprise
