@@ -86,9 +86,18 @@ def GenerateConfig(context):
     dse_node_script = '''
         #!/usr/bin/env bash
 
+	# If dse already installed, do nothing
+        dpkg -s dse &> /dev/null
+        retVal=$?
+        if [ $retVal -eq 0 ]; then
+          exit 0
+        fi
+
+        # Prepare for fresh DSE installation
         mkdir /mnt
         mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-${HOSTNAME}-data-disk
         mount -o discard,defaults /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
+        echo "/dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt ext4 discard,defaults 0 2" | tee -a /etc/fstab
         mkdir -p /mnt/data1
         mkdir -p /mnt/data1/data
         mkdir -p /mnt/data1/saved_caches
@@ -97,7 +106,7 @@ def GenerateConfig(context):
 
         ##### Install DSE the LCM way
         cd ~ubuntu
-        release="7.0.2"
+        release="7.0.3"
         wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.tar.gz
         tar -xvf $release.tar.gz
         # install extra OS packages
@@ -180,8 +189,16 @@ def GenerateConfig(context):
     opscenter_script = '''
       #!/usr/bin/env bash
 
+      # If opscenter already installed, do nothing
+      dpkg -s opscenter &> /dev/null
+      retVal=$?
+      if [ $retVal -eq 0 ]; then
+        exit 0
+      fi
+ 
+      # Prepare for fresh OpsCenter installation
       cd ~ubuntu
-      release="7.0.2" 
+      release="7.0.3" 
       wget https://github.com/DSPN/install-datastax-ubuntu/archive/$release.tar.gz
       tar -xvf $release.tar.gz
       # install extra OS packages
