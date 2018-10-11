@@ -7,6 +7,7 @@
     * IMAGE_NAME should be the latest stock image - use gcloud compute images list | grep ubuntu-1604 to find latest
     * INSTANCE is the name we want to call it - something like instance-ubuntu-1604-xenial-v20181011-tb
 * Run % ./1.sh
+* If you need to add extra packages or other software, it should be done now. ssh into VM and perfrom these activities
 * Continue from step 5 through step 9 in [here](https://cloud.google.com/launcher/docs/partners/technical-components)
    * Clean up your disk.
    * Create your solution listing in Partner Portal,
