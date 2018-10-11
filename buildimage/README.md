@@ -8,6 +8,8 @@
     * INSTANCE is the name we want to call it - something like instance-ubuntu-1604-xenial-v20181011-tb
 * Run % ./1.sh
 * Continue from step 5 through step 9 in [here](https://cloud.google.com/launcher/docs/partners/technical-components)
+   * Clean up your disk.
+   * Create your solution listing in Partner Portal,
 * Update GOOGLE_APPLICATION_CREDENTIALS environmen variable
 * Run % gcloud auth application-default login (ensure to authenticate against the datastax-public project through setting the environment variable: GOOGLE_APPLICATION_CREDENTIALS)
 * Run % ./build_image.sh
