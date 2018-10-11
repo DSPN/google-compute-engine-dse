@@ -4,6 +4,8 @@
 * Run % git clone https://github.com/DSPN/google-compute-engine-dse
 * Run % cd google-compute-engine-dse/buildimage
 * Review and update 1.sh and build_image.sh to reflect your new Google's stock Ubuntu image
+    IMAGE_NAME should be the latest stock image - use gcloud compute images list | grep ubuntu-1604 to find latest
+    INSTANCE is the name we want to call it - something like instance-ubuntu-1604-xenial-v20181011-tb
 * Run % ./1.sh
 * Continue from step 5 through step 9 in [here](https://cloud.google.com/launcher/docs/partners/technical-components)
 * Update GOOGLE_APPLICATION_CREDENTIALS environmen variable
