@@ -9,17 +9,17 @@ resources:
     clusterName: lowes-dev
     # DSE cluster deploys in the following GCE zones
     # Each zone represents a DSE cluster datacenter
-    zones:
+    zones: 
+    - us-west1-a
     - us-west1-b
-    - us-central1-b
-    - us-east1-b
+    - us-west1-c
     # GCE VPC network to deploy DSE cluster and DSE OpsCenter
     network: https://www.googleapis.com/compute/v1/projects/lowes-host/global/networks/vpc-test
     # DSE cluster nodes deploy in these subnets in the order of the zones above
     subnetworks: 
+    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-132
+    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-136
     - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-138
-    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-central1/subnetworks/subnet-156
-    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-east1/subnetworks/subnet-152
     # DSE cluster datacenter size in each zone in the order of the zone above
     dcSize: 
     - 2
@@ -34,7 +34,7 @@ resources:
     # GCE zone to deploy DSE OpsCenter
     opsCenterZone: us-west1-b
     # GCE VPC network subnet to deploy DSE OpsCenter
-    opsCenterSubnetwork: https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-138
+    opsCenterSubnetwork: https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-132
     # DSE version
     dseVersion: 6.0.0
     # DSE C* cassandra's user's password
