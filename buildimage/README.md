@@ -15,4 +15,5 @@
    * first update the disk image with the one you just created
    * update the image name
    * update the description
+   * optional - may need to pip install oauth2client
 
