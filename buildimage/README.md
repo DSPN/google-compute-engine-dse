@@ -11,5 +11,8 @@
 * Continue from step 5 through step 9 in [here](https://cloud.google.com/launcher/docs/partners/technical-components)
    * Clean up your disk.
 * Run % gcloud auth application-default login (ensure to authenticate against the datastax-public project through setting the environment variable: GOOGLE_APPLICATION_CREDENTIALS)
-* Run % ./build_image.sh - first update the disk image with the one you just created
+* Run % ./build_image.sh  
+   * first update the disk image with the one you just created
+   * update the image name
+   * update the description
 
