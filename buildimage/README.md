@@ -10,7 +10,6 @@
 * If you need to add extra packages or other software, it should be done now. ssh into VM and perfrom these activities
 * Continue from step 5 through step 9 in [here](https://cloud.google.com/launcher/docs/partners/technical-components)
    * Clean up your disk.
-* Update GOOGLE_APPLICATION_CREDENTIALS environment variable
 * Run % gcloud auth application-default login (ensure to authenticate against the datastax-public project through setting the environment variable: GOOGLE_APPLICATION_CREDENTIALS)
 * Run % ./build_image.sh
 
