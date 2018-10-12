@@ -5,17 +5,42 @@ resources:
 - name: datastax
   type: datastax.py
   properties:
+    # DSE cluster name
+    clusterName: lowes-dev
+    # DSE cluster deploys in the following GCE zones
+    # Each zone represents a DSE cluster datacenter
     zones:
+    - us-west1-b
+    - us-central1-b
     - us-east1-b
-    - europe-west1-b
-    - asia-east1-a
-    machineType: n1-standard-2
-    nodesPerZone: 3
+    # GCE VPC network to deploy DSE cluster and DSE OpsCenter
+    network: https://www.googleapis.com/compute/v1/projects/lowes-host/global/networks/vpc-test
+    # DSE cluster nodes deploy in these subnets in the order of the zones above
+    subnetworks: 
+    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-138
+    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-central1/subnetworks/subnet-156
+    - https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-east1/subnetworks/subnet-152
+    # DSE cluster datacenter size in each zone in the order of the zone above
+    dcSize: 
+    - 2
+    - 3 
+    - 4
+    # GCE machine type
+    machineType: n1-standard-4
+    # GCE persistent disk type
     dataDiskType: pd-ssd
+    # GCE persistent disk size for storing DSE C* data
     diskSize: 60
-    opsCenterZone: us-central1-f
+    # GCE zone to deploy DSE OpsCenter
+    opsCenterZone: us-west1-b
+    # GCE VPC network subnet to deploy DSE OpsCenter
+    opsCenterSubnetwork: https://www.googleapis.com/compute/v1/projects/lowes-host/regions/us-west1/subnetworks/subnet-138
+    # DSE version
     dseVersion: 6.0.0
+    # DSE C* cassandra's user's password
     cassandraPwd: datastax1!
+    # DataStax Academy Creds
     dsa_username: datastax@google.com
     dsa_password: 8GdeeVT2s7zi
+    # DSE OpsCenter admin's password
     opsCenterAdminPwd: opscenter1!

@@ -2,48 +2,13 @@ import yaml
 import random
 import string
 
-def GetZonesList(context):
-    zones = []
-    if context.properties['usEast1b']:
-        zones.append('us-east1-b')
-    if context.properties['usEast1c']:
-        zones.append('us-east1-c')
-    if context.properties['usEast1d']:
-        zones.append('us-east1-d')
-    if context.properties['usCentral1a']:
-        zones.append('us-central1-a')
-    if context.properties['usCentral1b']:
-        zones.append('us-central1-b')
-    if context.properties['usCentral1c']:
-        zones.append('us-central1-c')
-    if context.properties['usCentral1f']:
-        zones.append('us-central1-f')
-    if context.properties['europeWest1b']:
-        zones.append('europe-west1-b')
-    if context.properties['europeWest1c']:
-        zones.append('europe-west1-c')
-    if context.properties['europeWest1d']:
-        zones.append('europe-west1-d')
-    if context.properties['asiaEast1a']:
-        zones.append('asia-east1-a')
-    if context.properties['asiaEast1b']:
-        zones.append('asia-east1-b')
-    if context.properties['asiaEast1c']:
-        zones.append('asia-east1-c')
-    assert len(zones) > 0, 'No zones selected for DataStax Enterprise nodes'
-    return zones
-
 
 def GenerateConfig(context):
     config = {'resources': []}
 
-    # Set zones list based on zone booleans.
-    if ('zones' not in context.properties or len(context.properties['zones']) == 0):
-        context.properties['zones'] = GetZonesList(context)
-
     # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
     context.properties['zone'] = context.properties['opsCenterZone']
-    cluster_name = 'clusters-' + context.env['name']
+    cluster_name = context.properties['clusterName']
 
     # Generate a random bucket name
     bucket_suffix = ''.join([random.choice(string.ascii_lowercase + string.digits) for n in xrange(10)])
@@ -62,10 +27,8 @@ def GenerateConfig(context):
     # Set default OpsCenter Admin password
     opsc_admin_pwd = context.properties['opsCenterAdminPwd']
 
-    # Set DC size, number of DCs and cluster's size
-    dc_size = context.properties['nodesPerZone']
-    num_dcs = len(context.properties['zones'])
-    cluster_size = dc_size * num_dcs
+    # Set cluster's size
+    cluster_size = sum(context.properties['dcSize'])
 
     seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env[
         'project'] + '.internal.'
@@ -152,39 +115,48 @@ def GenerateConfig(context):
         --nodeid $node_id \
         '''
 
-    zonal_clusters = {
-        'name': 'clusters-' + context.env['name'],
-        'type': 'regional_multi_vm.py',
-        'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180424',
-            'zones': context.properties['zones'],
-            'machineType': context.properties['machineType'],
-            'network': context.properties['network'],
-            'numberOfVMReplicas': context.properties['nodesPerZone'],
-            'disks': [
-                {
-                    'deviceName': 'vm-data-disk',
-                    'type': 'PERSISTENT',
-                    'boot': 'false',
-                    'autoDelete': 'true',
-                    'initializeParams': {
-                        'diskType': context.properties['dataDiskType'],
-                        'diskSizeGb': context.properties['diskSize']
-                    }
-                }
-            ],
-            'bootDiskType': 'pd-standard',
-            'bootDiskSizeGb': 20,
-            'metadata': {
-                'items': [
-                    {
-                        'key': 'startup-script',
-                        'value': dse_node_script
-                    }
-                ]
-            }
-        }
-    }
+    # Create DSE VM in each region
+    count = 0
+    for dc_size in context.properties['dcSize']:
+      context.properties['current_zone'] = list()
+      context.properties['current_zone'].append(context.properties['zones'][count])
+      zonal_clusters = {
+          'name': context.env['name'] + context.properties['current_zone'][0],
+          'type': 'regional_multi_vm.py',
+          'properties': {
+              'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180424',
+              'zones': context.properties['current_zone'],
+              'machineType': context.properties['machineType'],
+              'network': context.properties['network'],
+              'subnetwork': context.properties['subnetworks'][count],
+              'numberOfVMReplicas': dc_size,
+              'disks': [
+                  {
+                      'deviceName': 'vm-data-disk',
+                      'type': 'PERSISTENT',
+                      'boot': 'false',
+                      'autoDelete': 'true',
+                      'initializeParams': {
+                          'diskType': context.properties['dataDiskType'],
+                          'diskSizeGb': context.properties['diskSize']
+                      }
+                  }
+              ],
+              'bootDiskType': 'pd-standard',
+              'bootDiskSizeGb': 20,
+              'metadata': {
+                  'items': [
+                      {
+                          'key': 'startup-script',
+                          'value': dse_node_script
+                      }
+                  ]
+              }
+          }
+      }
+      config['resources'].append(zonal_clusters)
+      count += 1
+
 
     opscenter_script = '''
       #!/usr/bin/env bash
@@ -224,9 +196,6 @@ def GenerateConfig(context):
 
       # Generate cluster name
       cluster_name=''' + cluster_name + '''
-
-      # Generate number of DCs 
-      num_dcs=''' + str(num_dcs) + '''
 
       # Generate cluster size
       cluster_size=''' + str(cluster_size) + '''
@@ -274,6 +243,7 @@ def GenerateConfig(context):
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
+            'subnetwork': context.properties['opsCenterSubnetwork'],
             'bootDiskType': 'pd-standard',
             'serviceAccounts': [{
                 'email': 'default',
@@ -290,7 +260,6 @@ def GenerateConfig(context):
         }
     }
 
-    config['resources'].append(zonal_clusters)
     config['resources'].append(opscenter_node)
 
     first_enterprise_node_name = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm'

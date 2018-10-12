@@ -114,9 +114,7 @@ def GenerateComputeVM(context):
     disks = AppendLocalSSDDisks(context, disks, local_ssd)
   machine_type = common.MakeLocalComputeLink(context, default.MACHINETYPE)
   network = common.MakeGlobalComputeLink(context, default.NETWORK)
-  subnetwork = ''
-  if default.SUBNETWORK in prop:
-    subnetwork = common.MakeSubnetworkComputeLink(context, default.SUBNETWORK)
+  subnetwork = common.MakeGlobalComputeLink(context, default.SUBNETWORK)
 
   # To be consistent with Dev console and gcloud, service accounts need to be
   #  explicitly disabled
