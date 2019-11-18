@@ -2,44 +2,15 @@ import yaml
 import random
 import string
 
-def GetZonesList(context):
-    zones = []
-    if context.properties['usEast1b']:
-        zones.append('us-east1-b')
-    if context.properties['usEast1c']:
-        zones.append('us-east1-c')
-    if context.properties['usEast1d']:
-        zones.append('us-east1-d')
-    if context.properties['usCentral1a']:
-        zones.append('us-central1-a')
-    if context.properties['usCentral1b']:
-        zones.append('us-central1-b')
-    if context.properties['usCentral1c']:
-        zones.append('us-central1-c')
-    if context.properties['usCentral1f']:
-        zones.append('us-central1-f')
-    if context.properties['europeWest1b']:
-        zones.append('europe-west1-b')
-    if context.properties['europeWest1c']:
-        zones.append('europe-west1-c')
-    if context.properties['europeWest1d']:
-        zones.append('europe-west1-d')
-    if context.properties['asiaEast1a']:
-        zones.append('asia-east1-a')
-    if context.properties['asiaEast1b']:
-        zones.append('asia-east1-b')
-    if context.properties['asiaEast1c']:
-        zones.append('asia-east1-c')
-    assert len(zones) > 0, 'No zones selected for DataStax Enterprise nodes'
-    return zones
-
-
 def GenerateConfig(context):
     config = {'resources': []}
 
-    # Set zones list based on zone booleans.
-    if ('zones' not in context.properties or len(context.properties['zones']) == 0):
-        context.properties['zones'] = GetZonesList(context)
+    zone_subnet = context.properties['zone_subnet']
+    zones = []
+    subnetworks = []
+    for item in zone_subnet:
+       zones.append(item.split(':')[0])
+       subnetworks.append(item.split(':')[1])
 
     # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
     context.properties['zone'] = context.properties['opsCenterZone']
@@ -64,10 +35,10 @@ def GenerateConfig(context):
 
     # Set DC size, number of DCs and cluster's size
     dc_size = context.properties['nodesPerZone']
-    num_dcs = len(context.properties['zones'])
+    num_dcs = len(zones)
     cluster_size = dc_size * num_dcs
 
-    seed_nodes_dns_names = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm.c.' + context.env[
+    seed_nodes_dns_names = context.env['deployment'] + '-' + zones[0] + '-1-vm.c.' + context.env[
         'project'] + '.internal.'
     opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
     opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal.'
@@ -163,9 +134,10 @@ def GenerateConfig(context):
         'type': 'regional_multi_vm.py',
         'properties': {
             'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180824',
-            'zones': context.properties['zones'],
+            'zones': zones,
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
+            'subnetworks' : subnetworks, 
             'numberOfVMReplicas': context.properties['nodesPerZone'],
             'disks': [
                 {
@@ -277,6 +249,7 @@ def GenerateConfig(context):
             'zone': context.properties['opsCenterZone'],
             'machineType': context.properties['machineType'],
             'network': context.properties['network'],
+            'subnetwork': context.properties['opsCenterSubnet'], 
             'bootDiskType': 'pd-standard',
             'serviceAccounts': [{
                 'email': 'default',
@@ -296,7 +269,7 @@ def GenerateConfig(context):
     config['resources'].append(zonal_clusters)
     config['resources'].append(opscenter_node)
 
-    first_enterprise_node_name = context.env['deployment'] + '-' + context.properties['zones'][0] + '-1-vm'
+    first_enterprise_node_name = context.env['deployment'] + '-' + zones[0] + '-1-vm'
     outputs = [
         {
             'name': 'project',
@@ -316,7 +289,7 @@ def GenerateConfig(context):
         },
         {
             'name': 'zoneList',
-            'value': ', '.join(context.properties['zones'])
+            'value': ', '.join(zones)
         },
         {
             'name': 'x-status-type',

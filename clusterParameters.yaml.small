@@ -5,15 +5,16 @@ resources:
 - name: datastax
   type: datastax.py
   properties:
-    zones:
-    - us-east1-b
-    - europe-west1-b
-    - asia-east1-a
+    zone_subnet:
+    - us-east1-b:gml-d4-us-east1
+    - europe-west1-b:gml-d4-europe-west1
+    - asia-east1-a:gml-d4-asia-east1
     machineType: n1-standard-2
     nodesPerZone: 3
     dataDiskType: pd-ssd
     diskSize: 60
     opsCenterZone: us-central1-f
+    opsCenterSubnet: gml-d4-us-central1
     dseVersion: 6.7.3
     cassandraPwd: datastax1!
     dsa_username: datastax@google.com
