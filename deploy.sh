@@ -1,4 +1,3 @@
 #!/bin/sh
 
-DEPLOYMENT_NAME=$1
-gcloud deployment-manager deployments create $DEPLOYMENT_NAME --config clusterParameters.yaml
+gcloud deployment-manager deployments create $deployment_name --config clusterParameters.yaml --project $gcp_project

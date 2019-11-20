@@ -1,6 +1,6 @@
 # google-compute-engine-dse
 
-This is a Google Deployment Manager template for Google Compute Engine (GCE) that will deploy a single or multiple datacenter cluster.  deploy.sh is the main entry point.  The clusterParameters.* files give some example configurations.
+This is a Google Deployment Manager template for Google Compute Engine (GCE) that will deploy a DataStax Enterprise (DSE) cluster in a single GCP region.  deploy.sh is the main entry point.  The clusterParameters.* files give some example configurations.
 
 The [DataStax Enterprise Deployment Guide for Google](https://github.com/DSPN/google-deployment-guide) provides background on best practices in Google Cloud Platform (GCP) as well as instructions on using Google Cloud Launcher.  Cloud Launcher is Google's graphical tool for creating deployments.  This template is used in our Cloud Launcher deployment.
 
@@ -39,34 +39,33 @@ If all went well, output should look something like this:
 ![](./img/gitclone.png)
 
 Now cd into the repo directory and list files there using the commands:
-
-    clear
-    cd google-compute-engine-dse
-    ls
-
+```
+cd google-compute-engine-dse
+ls
+```
 ![](./img/ls.png)
 
 Our main entry point is a file called deploy.sh. We can inspect that file using the commands:
-
-    clear
-    cat deploy.sh
-
+```
+cat deploy.sh
+```
 ![](./img/catdeploy.png)
 
-This is an extremely simple shell script that invokes the Google Cloud SDK. It takes one argument, the name of the deployment. The deployment name needs to be unique within your project. The deploy.sh script also depends on the input file clusterParameters.yaml. This file defines our cluster topology. Let’s take a quick look with the following commands:
-
-    clear
-    cat clusterParameters.yaml
-
+This is an extremely simple shell script that invokes the Google Cloud SDK. It uses two environment variables called deployment_name and gcp_project. The deployment_name needs to be unique within your project while the gcp_project is the name of your GCP project to deploy your DSE cluster.. The deploy.sh script also depends on the input file clusterParameters.yaml. This file defines our cluster topology. Let’s take a quick look with the following commands:
+```
+cat clusterParameters.yaml
+```
 ![](./img/catclusterparameters.png)
 
-This config is going to create 3 nodes in each of 3 different regions, for a total of 9 nodes. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 60GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
+This config is going to create 3 nodes in **us-central1** region. Each node is a very small machine, an n1-standard-2. This isn’t a size we’d recommend for production use but is fine for testing out a deployment. Similarly, each node will be configured with a 60GB pd-ssd.  This is an extremely small disk but will be sufficient for our test deployment.
 
 You can choose DataStax Enterprise version 5.1.15 or version 6.7.3 for your deployment where 6.7.3 is the default DSE version. It is defined in the **dseVersion** field.
 
 Specifically, you can either use our default password `datastax1!` for the "cassandra" user or choose your own password by updating the value of the **cassandraPwd** field.  You will need to provide your DataStax Academy username and password for the **dsa_username** and **dsa_password** fields respectively in order to execute your template.  If you do not have an account at academy.datastax.com, you can create one now.  It is free!
 
 There is also a field named **opsCenterAdminPwd** to define a custom password for OpsCenter's Username: "admin".  It has been defaulted to `opscenter1!` in our sample clusterParameters.yaml template.  
+
+The rest of the fields are self-explanatory and are with appropriate remarks to describe their purpose.
 
 Two additional example config files are provided, clusterParameters.small.yaml and clusterParameters.large.yaml. The large one creates nodes in every Google zone currently available. You may need to request your core quotas be increased to run it.
 
@@ -77,38 +76,38 @@ Now that we’ve had a look through the project, let’s try running it!
 ## Create a Deployment
 
 We’re going to start off by creating a new deployment. I’m going to call mine `gml`. To create it, I’m going to enter the command:
-
-    clear
-    ./deploy.sh gml
-
+```
+clear
+export deployment_name=dse-cluster-673
+export gcp_project=gke-launcher-dev
+./deploy.sh
+```
 Once that completes, I see the following output:
 
-![](./img/deploy.png)
+![](./img/deploy_sh.png)
 
-At this point, the physical resources on GCE have all provisioned. DataStax Enterprise OpsCenter LifeCycle Manager (LCM) will continue provisioning DSE nodes. That will typically take additional 20 minutes or more to deploy a 9-node DSE cluster spanning 3 GCE zones. The actual deployment time is subject to the size of your cluster.
+At this point, the physical resources on GCE have all provisioned. DataStax Enterprise OpsCenter LifeCycle Manager (LCM) will continue provisioning DSE nodes. That will typically take additional 30 minutes or more to deploy a 9-node DSE cluster spanning 3 GCE zones. The actual deployment time is subject to the size of your cluster.
 
 ## Inspecting the Cluster
 
 To view OpsCenter, the DataStax admin interface, we will need to create an ssh tunnel.  To do that, open a terminal on your local machine and run the command:
-
-    gcloud compute ssh --ssh-flag=-L8443:localhost:8443 --project=<NAME OF YOUR PROJECT> --zone=us-central1-f <NAME OF YOUR DEPLOYMENT>-opscenter-vm 
-
-In my case, the project is named `fieldops-gce-presales` and the deployment is named `gml`, though it will have a different name for you.
-
-![](./img/tunnel.png)
+```
+./ssh_opscenter.sh
+```
+![](./img/ssh_tunnel.png)
 
 Now, we can open a web browser to https://localhost:8443 and log into OpsCenter using "admin" as Username and the value of opsCenterAdminPwd in clusterParameters.yaml as Password. *The OpsCenter instance uses a self-signed SSL certificate, so you will need to accept the certificate exception before you can see the OpsCenter's login page.* 
 
 ![](./img/pre_opscenter.png)
 ![](./img/opscenter.png)
 
-Great!  You now have a DataStax Enterprise cluster running with 3 nodes in Asia, Europe and America.
+Great!  You now have a DataStax Enterprise cluster running with 3 nodes in **us-central1** region..
 
 We can also log into a node to interact with the database.  To do that go back to the Google Cloud console.
 
-![](./img/nodes.png)
+![](./img/dse_node_vm_ssh.png)
 
-Click on any node.  In DataStax Enterprise the nodes are homogeneous so we can interact with any one.
+Click on the **ssh** button of any DSE nodes.  In DataStax Enterprise the nodes are homogeneous so we can interact with any one.
 
 ![](./img/node.png)
 
@@ -117,24 +116,23 @@ We can connect to that node by clicking "SSH."  This will open an SSH window.
 ![](./img/terminal.png)
 
 At this point we can clear the terminal window and start up cqlsh, the command line interface to DataStax Enterprise.
-
-    clear
-    cqlsh -u cassandra -p datastax1!
-
+```    
+cqlsh -u cassandra -p datastax1!
+```
 ![](./img/cqlsh.png)
 
 From there you can issue any valid cql command.  For instance:
-
-    desc keyspaces
-    
+```
+desc keyspaces
+```    
 ![](./img/desc.png)
     
 ## Deleting a Deployment
 
 Deployments can be deleted via the command line or the web UI. To use the command line type the command:
-
-    gcloud deployment-manager deployments delete gml
-
+```
+gcloud deployment-manager deployments delete dse-cluster-673 --project gke-launcher-dev
+```
 ## Next Steps
 
 If you want to learn more about DataStax Enterprise, the online training courses at https://academy.datastax.com/ are a great place to start.

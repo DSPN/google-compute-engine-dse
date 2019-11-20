@@ -2,23 +2,38 @@ import yaml
 import random
 import string
 
+URL_BASE = 'https://www.googleapis.com/compute/v1/projects/'
+
 def GenerateConfig(context):
     config = {'resources': []}
 
-    zone_subnet = context.properties['zone_subnet']
-    zones = []
-    subnetworks = []
-    for item in zone_subnet:
-       zones.append(item.split(':')[0])
-       subnetworks.append(item.split(':')[1])
+    # Set deployment
+    deployment = context.env['deployment']
 
-    # Set zone property to match ops center zone. Needed for calls to common.MakeGlobalComputeLink.
-    context.properties['zone'] = context.properties['opsCenterZone']
-    cluster_name = 'clusters-' + context.env['name']
+    # Set serviceAccount
+    serviceAccountEmail = context.env['project_number'] + '-compute@developer.gserviceaccount.com'
+
+    # Set region, network, subnet
+    region = context.properties['region']
+    network = URL_BASE + context.env['project'] + '/global/networks/'+ context.properties['network']
+    subnet = URL_BASE + context.env['project'] + '/regions/' + region + '/subnetworks/' +  context.properties['subnet']
+
+    # Set OpsCenter variables
+    opscenter_zone = context.properties['opscZone']
+    opsc_admin_pwd = context.properties['opsCenterAdminPwd']
+    opscenter_node_name = deployment + '-opscenter-vm'
+    opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal.'
+    opscenter_machine_type = ''.join([URL_BASE,
+      context.env['project'], '/zones/',
+      opscenter_zone, '/machineTypes/',
+      context.properties['opscMachineType']])
+    opscenter_vm_disk_type = ''.join([URL_BASE,
+      context.env['project'], '/zones/',
+      opscenter_zone, '/diskTypes/pd-standard'])
 
     # Generate a random bucket name
     bucket_suffix = ''.join([random.choice(string.ascii_lowercase + string.digits) for n in xrange(10)])
-    sshkey_bucket = context.env['deployment'] + '-ssh-pub-key-bucket-' + bucket_suffix
+    sshkey_bucket = deployment + '-ssh-pub-key-bucket-' + bucket_suffix
 
     # DSE version
     dse_version = context.properties['dseVersion']
@@ -30,18 +45,13 @@ def GenerateConfig(context):
     dsa_username = context.properties['dsa_username']
     dsa_password = context.properties['dsa_password']
 
-    # Set default OpsCenter Admin password
-    opsc_admin_pwd = context.properties['opsCenterAdminPwd']
+    # Set cluster's name & size
+    cluster_name = context.properties['clusterName']
+    cluster_size = context.properties['clusterSize']
 
-    # Set DC size, number of DCs and cluster's size
-    dc_size = context.properties['nodesPerZone']
-    num_dcs = len(zones)
-    cluster_size = dc_size * num_dcs
-
-    seed_nodes_dns_names = context.env['deployment'] + '-' + zones[0] + '-1-vm.c.' + context.env[
-        'project'] + '.internal.'
-    opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
-    opscenter_dns_name = opscenter_node_name + '.c.' + context.env['project'] + '.internal.'
+    # dse resources
+    dse_node_it_resource = deployment + '-dse-node-it'
+    dse_node_igm_resource = deployment + '-dse-node-igm'
 
     # Prepare a storage bucket to store our randomly generated SSH key pair for LCM's DSE install
     ssh_pub_key_bucket = {
@@ -66,9 +76,9 @@ def GenerateConfig(context):
 
         # Prepare for fresh DSE installation
         mkdir /mnt
-        mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-${HOSTNAME}-data-disk
-        mount -o discard,defaults /dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt
-        echo "/dev/disk/by-id/google-${HOSTNAME}-data-disk /mnt ext4 discard,defaults 0 2" | tee -a /etc/fstab
+        mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/disk/by-id/google-vm-data-disk
+        mount -o discard,defaults /dev/disk/by-id/google-vm-data-disk /mnt
+        echo "/dev/disk/by-id/google-vm-data-disk /mnt ext4 discard,defaults 0 2" | tee -a /etc/fstab
         mkdir -p /mnt/data1
         mkdir -p /mnt/data1/data
         mkdir -p /mnt/data1/saved_caches
@@ -129,40 +139,83 @@ def GenerateConfig(context):
         popd
         '''
 
-    zonal_clusters = {
-        'name': 'clusters-' + context.env['name'],
-        'type': 'regional_multi_vm.py',
+    dse_node_it = {
+        # Create the Instance Template
+        'name': dse_node_it_resource,
+        'type': 'compute.v1.instanceTemplate',
         'properties': {
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180824',
-            'zones': zones,
-            'machineType': context.properties['machineType'],
-            'network': context.properties['network'],
-            'subnetworks' : subnetworks, 
-            'numberOfVMReplicas': context.properties['nodesPerZone'],
-            'disks': [
-                {
+            'properties': {
+                'tags': {
+                    'items': [
+                       deployment,'dse-node'
+                    ]
+                },
+                'machineType':
+                    context.properties['machineType'],
+                'networkInterfaces': [{
+                    'network': network,
+                    'subnetwork': subnet,
+                    'accessConfigs': [{
+                        'name': 'External NAT',
+                        'type': 'ONE_TO_ONE_NAT'
+                    }]
+                }],
+                'disks': [{
+                    'deviceName': 'boot-disk',
+                    'type': 'PERSISTENT',
+                    'boot': True,
+                    'autoDelete': True,
+                    'initializeParams': {
+                        'sourceImage':
+                          URL_BASE + 'datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180824'
+                    }
+                  },
+                  {
                     'deviceName': 'vm-data-disk',
                     'type': 'PERSISTENT',
-                    'boot': 'false',
-                    'autoDelete': 'true',
+                    'boot': False,
+                    'autoDelete': True,
                     'initializeParams': {
                         'diskType': context.properties['dataDiskType'],
-                        'diskSizeGb': context.properties['diskSize']
+                        'diskSizeGb': context.properties['dataDiskSize']
                     }
-                }
-            ],
-            'bootDiskType': 'pd-standard',
-            'bootDiskSizeGb': 20,
-            'metadata': {
-                'items': [
-                    {
+                  }
+                ],
+                'serviceAccounts': [{
+                   'email': serviceAccountEmail,
+                   'scopes': ['https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/cloudruntimeconfig', 'https://www.googleapis.com/auth/devstorage.full_control', 'https://www.googleapis.com/auth/cloud-platform']
+                }],
+                'metadata': {
+                    'dependsOn': [
+                        sshkey_bucket,
+                    ],
+                    'items': [ {
                         'key': 'startup-script',
                         'value': dse_node_script
-                    }
-                ]
+                    }]
+                }
             }
         }
+    } 
+    config['resources'].append(dse_node_it)
+
+    dse_node_igm = {
+        # Instance Group Manager
+        'name': dse_node_igm_resource,
+        'type': 'compute.v1.regionInstanceGroupManager',
+        'properties': {
+            'region': region,
+            'baseInstanceName': deployment + '-dse-node',
+            'instanceTemplate': '$(ref.%s.selfLink)' % dse_node_it_resource,
+            'targetSize': context.properties['clusterSize']
+        },
+        'metadata': {
+            'dependsOn': [
+                  dse_node_it_resource,
+            ]
+        }
     }
+    config['resources'].append(dse_node_igm)
 
     opscenter_script = '''
       #!/usr/bin/env bash
@@ -206,9 +259,6 @@ def GenerateConfig(context):
       # Generate cluster name
       cluster_name=''' + cluster_name + '''
 
-      # Generate number of DCs 
-      num_dcs=''' + str(num_dcs) + '''
-
       # Generate cluster size
       cluster_size=''' + str(cluster_size) + '''
     
@@ -239,37 +289,54 @@ def GenerateConfig(context):
   
       '''
 
-    opscenter_node_name = context.env['deployment'] + '-opscenter-vm'
     opscenter_node = {
         'name': opscenter_node_name,
-        'type': 'vm_instance.py',
+        'type': 'compute.v1.instance',
         'properties': {
-            'instanceName': opscenter_node_name,
-            'sourceImage': 'https://www.googleapis.com/compute/v1/projects/datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180824',
-            'zone': context.properties['opsCenterZone'],
-            'machineType': context.properties['machineType'],
-            'network': context.properties['network'],
-            'subnetwork': context.properties['opsCenterSubnet'], 
-            'bootDiskType': 'pd-standard',
-            'serviceAccounts': [{
-                'email': 'default',
-                'scopes': ['https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/devstorage.full_control']
-            }],
-            'metadata': {
-                'items': [
-                    {
-                        'key': 'startup-script',
-                        'value': opscenter_script
+          'tags': {
+                    'items': [
+                       deployment, deployment + '-opscenter-vm'
+                   ]
+          },
+          'zone': opscenter_zone,
+          'machineType': opscenter_machine_type,
+          'networkInterfaces': [{
+                    'network': network,
+                    'subnetwork': subnet,
+                    'accessConfigs': [{
+                        'name': 'External NAT',
+                        'type': 'ONE_TO_ONE_NAT'
+                    }]
+          }],
+          'disks': [{
+                    'deviceName': 'boot-disk',
+                    'type': 'PERSISTENT',
+                    'boot': True,
+                    'autoDelete': True,
+                    'initializeParams': {
+                        'sourceImage':
+                            URL_BASE + 'datastax-public/global/images/datastax-enterprise-ubuntu-1604-xenial-v20180824',
+                        'diskType': opscenter_vm_disk_type
                     }
-                ]
-            }
-        }
+          }],
+        'serviceAccounts': [{
+                   'email': serviceAccountEmail,
+                   'scopes': ['https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/cloudruntimeconfig', 'https://www.googleapis.com/auth/devstorage.full_control']
+        }],
+        'metadata': {
+            'dependsOn': [
+               sshkey_bucket,
+            ],
+            'items': [{
+                'key': 'startup-script',
+                'value': opscenter_script
+            }]
+          }
+       }
     }
 
-    config['resources'].append(zonal_clusters)
     config['resources'].append(opscenter_node)
 
-    first_enterprise_node_name = context.env['deployment'] + '-' + zones[0] + '-1-vm'
     outputs = [
         {
             'name': 'project',
@@ -278,18 +345,6 @@ def GenerateConfig(context):
         {
             'name': 'opsCenterNodeName',
             'value': opscenter_node_name
-        },
-        {
-            'name': 'firstEnterpriseNodeName',
-            'value': first_enterprise_node_name
-        },
-        {
-            'name': 'firstEnterpriseNodeSelfLink',
-            'value': '$(ref.' + first_enterprise_node_name + '.selfLink)'
-        },
-        {
-            'name': 'zoneList',
-            'value': ', '.join(zones)
         },
         {
             'name': 'x-status-type',
