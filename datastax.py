@@ -55,9 +55,9 @@ def GenerateConfig(context):
     # Set cassandra's user password
     db_pwd = context.properties['cassandraPwd']
 
-    # Set DataStax Academy credentials
-    dsa_username = context.properties['dsa_username']
-    dsa_password = context.properties['dsa_password']
+    # Set dummy DataStax Academy credentials
+    dsa_username = 'foo'
+    dsa_password = 'bar'
 
     # Set default OpsCenter Admin password
     opsc_admin_pwd = context.properties['opsCenterAdminPwd']
