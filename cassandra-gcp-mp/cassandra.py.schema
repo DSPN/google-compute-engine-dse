@@ -1,0 +1,105 @@
+# Copyright 2019 DataStax Inc. All rights reserved.
+#
+
+info:
+  title: Cassandra Cluster Deployment
+  author: DataStax, Inc.
+  description: |
+    Apache Cassandra deployment via GCP marketplace
+
+required:
+- region
+- clusterName
+- clusterSize
+- dcName
+- machineType
+- dataDiskSize
+
+properties:
+
+  region:
+    type: string
+    default: us-west1
+    x-googleProperty:
+      type: GCE_REGION
+
+  extIP:
+    type: boolean
+    default: false
+
+  clusterName:
+    type: string
+    default: cassandra_cluster
+    description: Cassandra cluster name
+
+  clusterSize:
+    type: integer
+    default: 3 
+    enum:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8 
+      - 9 
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+      - 18
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 26
+      - 27
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32 
+
+  dcName:
+    type: string
+    default: dc0
+    Description: Cassandra data center name
+
+  machineType:
+    type: string
+    default: n1-standard-4
+    enum:
+      - n1-standard-4
+      - n1-standard-8
+      - n1-standard-16
+      - n1-standard-32
+
+  devOpsMachineType:
+    type: string
+    default: n1-standard-4
+    enum:
+      - n1-standard-4
+      - n1-standard-8
+      - n1-standard-16
+
+  dataDiskSize:
+    type: integer
+    default: 1024
+    enum:
+      - 1024
+      - 2048
+      - 512
+
+
+outputs:
+  region:
+  type: string
+  clusterName:
+  type: string 

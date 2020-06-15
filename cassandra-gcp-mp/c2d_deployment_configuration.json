@@ -1,0 +1,7 @@
+{
+  "defaultDeploymentType": "MULTI_VM",
+  "templateName": "cassandra",
+  "projectId": "datastax-public",
+  "imageName": "cassandra-3-11-5-image",
+  "useSolutionPackage": true
+}

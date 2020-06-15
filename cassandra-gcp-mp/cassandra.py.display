@@ -1,0 +1,156 @@
+metadataVersion: v1
+description:
+  title: Datastax Enterprise for GCP
+  tagline: 'The massively scalable, active-everywhere, open-source NoSQL'
+  url: 'https://www.datastax.com'
+  author:
+    shortDescription: >-
+      The massively scalable, active-everywhere, open-source NoSQL database, deployed on
+      GCP with support available from DataStax
+    title: DataStax
+    url: 'http://datastax.com'
+  descriptionHtml: >-
+    Datastax Enterprise (DSE) is the open-source, massively scalable, active-everywhere
+    NoSQL database used by the internet’s largest applications. Cassandra is the
+    only NoSQL database with a masterless architecture enabling zero downtime,
+    zero lock-in, and global scale for data sovereignty.  
+
+
+    DSE™ for GCP gives users and enterprises a simple deployment
+    process based on cloud best practices to quickly install a DSE
+    cluster on GCP  in a single region across multiple fault domains.
+
+
+     For more on support, visit www.datastax.com and follow us on @DataStax.
+  logo: '@media/cassandra.png'
+  architectureDescription: >-
+    The DSE deployment creates a Cassandra cluster with a
+    configurable number of nodes in a single GCP region. The Cassandra nodes use
+    SSD based persistent disks to store data.
+  architectureDiagram: '@media/datastax_diagram.png'
+  version: 6.8.0
+  documentations:
+    - title: Getting started
+      url: 'https://github.com/DSPN/google-deployment-guide/blob/master/OSSLauncher.md'
+      description: Apache Cassandra™ deployment  on GCP marketplace
+      destinations:
+        - DESTINATION_SOLUTION_DETAILS
+        - DESTINATION_POST_DEPLOY
+    - title: Apache Cassandra Documentation
+      url: 'https://docs.datastax.com/en/cassandra-oss/3.x/'
+      destinations:
+        - DESTINATION_SOLUTION_DETAILS
+        - DESTINATION_POST_DEPLOY
+    - title: Cassandra Support
+      url: 'https://luna.datastax.com'
+      destinations:
+        - DESTINATION_SOLUTION_DETAILS
+        - DESTINATION_POST_DEPLOY
+    - title: Get Answers
+      url: 'https://community.datastax.com'
+      destinations:
+        - DESTINATION_SOLUTION_DETAILS
+        - DESTINATION_POST_DEPLOY
+    - title: CQL Primer
+      url: 'http://cassandra.apache.org/doc/latest/cql'
+      destinations:
+        - DESTINATION_SOLUTION_DETAILS
+        - DESTINATION_POST_DEPLOY
+  softwareGroups:
+    - type: SOFTWARE_GROUP_OS
+      software:
+        - title: Ubuntu
+          version: 18.04 LTS
+    - software:
+        - title: Apache Cassandra
+          version: 3.11.5
+  support:
+    - title: Support
+      descriptionHtml: >-
+        For support, go to <a href="https://luna.datastax.com/"
+        target="_blank">here</a>
+      showSupportId: false
+input:
+  sections:
+    - name: nodes
+      title: Cassandra Cluster
+    - name: devOps
+      title: DevOps VM
+  properties:
+    - name: region
+      title: GCP region
+      tooltip: GCP region to deploy Cassandra cluster
+    - name: clusterName
+      title: Name of Cassandra cluster
+      tooltip: Name of the cluster
+      section: nodes
+    - name: dcName
+      title: Name for Cassandra datacenter
+      tooltip: The 'datacenter' is a logical grouping of VMs within the cluster.
+      section: nodes
+    - name: clusterSize
+      title: Number of Cassandra nodes (Max. 32)
+      tooltip: Number of Cassandra nodes.
+      subtext: Maximum supported number of Cassandra nodes is 32
+      section: nodes
+    - name: machineType
+      title: Machine Type for Cassandra nodes
+      tooltip: Machine Type to provision for Cassandra nodes
+      section: nodes
+    - name: dataDiskSize
+      title: Data Disk Size (GB)
+      section: nodes
+    - name: extIP
+      title: Public IP on Cassandra nodes
+      tooltip: Cassandra nodes have/use public IPs
+      section: nodes
+    - name: devOpsMachineType
+      title: Machine Type for DevOps VM
+      tooltip: Machine Type to provision for DevOps VM
+      section: devOps
+runtime:
+  deployingMessage: Deployment of Cassandra cluster will take several minutes to complete.
+  applicationTable:
+    rows:
+      - label: Cassandra SKU
+        value: '{{ outputs().cassandraSku }}'
+      - label: Region
+        value: '{{ outputs().gcp_region }}'
+      - label: Cassandra Cluster Name
+        value: '{{ outputs().clusterName }}'
+      - label: Cassandra Cluster Size
+        value: '{{ outputs().clusterSize }}'
+      - label: Cassandra Datacenter Name
+        value: '{{ outputs().dcName }}'
+      - label: DevOps VM Public IP
+        value: '{{ outputs().devOpsExtIP }}'
+      - label: DevOps VM web portal
+        value: >-
+          <a href="http://{{ outputs().devOpsExtIP }}:8080/">http://{{
+          outputs().devOpsExtIP }}:8080/</a>
+  primaryButton:
+    type: TYPE_GCE_VM_SSH
+    label: SSH to DevOps VM
+    action: '{{ outputs().devOpsSelfLink }}'
+  secondaryButton:
+    type: TYPE_GCE_VM_SSH
+    label: SSH to Cassandra Seed Node 0
+    action: '{{ outputs().seed0SelfLink }}'
+  suggestedActions:
+    - heading: Register for Support
+      description: >-
+        In order to receive support from DataStax, go to the link <a
+        href="https://luna.datastax.com/" target="_blank">here</a>.
+    - heading: Database tools
+      description: >-
+        The Cassandra nodes each have the database and associated tools
+        installed. Find your Cassandra node virtual machine(s) inside GCP
+        console and use the SSH button to ssh into the node(s) and begin
+        exploring tools like <a
+        href="http://cassandra.apache.org/doc/3.11.3/tools/cqlsh.html">cqlsh</a>
+        and <a
+        href="http://cassandra.apache.org/doc/latest/tools/nodetool/nodetool.html">nodetool</a>.
+    - heading: Tutorials
+      description: >-
+        Getting started tutorials and online courses are available at <a
+        href="https://academy.datastax.com/">https://academy.datastax.com</a>

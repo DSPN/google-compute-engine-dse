@@ -1,0 +1,40 @@
+# Copyright 2019 DataStax Inc. All rights reserved.
+#
+# This template is designed to provision a new DDAC cluster to replace
+# an existing DDAC cluster provisioned through GCP Marketplace.
+
+imports:
+- path: cassandra.py
+#
+- path: common/common.py
+- path: common/software_status.py
+- path: common/software_status_script.py
+- path: common/software_status.py.schema
+- path: common/software_status.sh.tmpl
+- path: common/software_status_script.py.schema
+- path: common/software_status_script.py
+
+resources:
+- name: cassandra-cluster
+  type: cassandra.py
+  properties:
+    # Must match the GCP region of the existing OSS cluster
+    gcp_region: us-west1
+    # Must match the name of the existing OSS cluster
+    clusterName: luna_cluster
+    # Must match the size of the existing OSS cluster
+    clusterSize: 3
+    # Cannot collide with the DC name of the existing OSS cluster
+    dcName: dc0
+    # Public IPs for OSS nodes
+    extIP: false
+    # Must match the version of the existing OSS cluster
+    # luna-3-11-5-payg-image-24x7 contains C* 3.11.5 version
+    #ddacImage: cassandra-3-11-5-image
+    # Recommended to match the machine type of the existing OSS cluster
+    machineType: n1-standard-4
+    dataDiskType: pd-ssd
+    # OSS node's data disk size could only be 1024 or 2048 
+    # Must match the data disk size of the existing OSS cluster
+    dataDiskSize: 512
+    devOpsMachineType: n1-standard-4

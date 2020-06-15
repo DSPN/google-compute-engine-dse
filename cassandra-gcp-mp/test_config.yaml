@@ -1,0 +1,6 @@
+imports:
+  - path: cassandra.py
+
+resources:
+- name: cassandra
+  type: cassandra.py

@@ -1,0 +1,6 @@
+# Cassandra Config tasks
+- name: Setting log directory
+  replace:
+    dest:  /usr/share/dse/resources/cassandra/conf/logback.xml
+    regexp: '\${cassandra.logdir}'
+    replace: '/var/log/cassandra/logs'
