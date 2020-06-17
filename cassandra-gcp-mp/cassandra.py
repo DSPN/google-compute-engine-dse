@@ -188,7 +188,7 @@ def GenerateConfig(context):
 
     ## Download binaries
       pushd /home/dse
-      #gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+      gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
       
       while [ $? -ne 0 ]
       do
@@ -408,9 +408,8 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
   devops_vm_script = '''
       #!/usr/bin/env bash
       
-    #sleep 60
 
-    sudo echo "********** devops_vm_script **********" >> /var/log/syslog >> /var/log/syslog
+    sudo echo "********** devops_vm_script **********" >> /var/log/syslog 
 
     sudo mkdir /home/dse
     sudo mkdir /home/dse
@@ -418,33 +417,33 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
      
       # Ansible way
       deployment_bucket=''' + deployment_bucket + '''
-      #ssh-keygen -t rsa -N "" -f /home/ubuntu/.ssh/id_rsa
-      #gsutil cp /home/ubuntu/.ssh/id_rsa.pub gs://$deployment_bucket/
       ssh-keygen -t rsa -N "" -f /home/ubuntu/.ssh/id_rsa
       gsutil cp /home/ubuntu/.ssh/id_rsa.pub gs://$deployment_bucket/
       while [ $? -ne 0 ]
       do
           sleep 5s
-          #gsutil cp /home/ubuntu/.ssh/id_rsa.pub gs://$deployment_bucket/
           gsutil cp /home/ubuntu/.ssh/id_rsa.pub gs://$deployment_bucket/
       done
 
+      mv /home/ubuntu/.ssh/authorized_keys /home/ubuntu/.ssh/authorized_keys.bak
+      cat /home/ubuntu/.ssh/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys
+      chmod 0600 /home/ubuntu/.ssh/authorized_keys
       chown -R ubuntu:ubuntu /home/ubuntu/.ssh
       chown ubuntu:ubuntu /home/ubuntu/.ssh/*
 
-      # TODO 
-      # change to /home/dse
-      #gsutil cp gs://$deployment_bucket/go_ansible /home/cassandra
-      #while [ $? -ne 0 ]
-      #do
-          #sleep 10s
-          #gsutil cp gs://$deployment_bucket/go_ansible /home/cassandra
-      #done
 
       # TODO 
 
       ## Install binary
       pushd /home/dse
+      gsutil cp gs://dse-opsc-vm-components/opscenter-6.8.0.tar.gz /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 10s
+          gsutil cp gs://dse-opsc-vm-components/opscenter-6.8.0.tar.gz /home/dse
+      
+      done
+
       gsutil cp gs://dse-opsc-vm-components/*.yml /home/dse
       while [ $? -ne 0 ]
       do
@@ -486,6 +485,7 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
       chown -R ubuntu:ubuntu /home/ubuntu/.ssh
       cp /home/dse/ansible.cfg /etc/ansible/ansible.cfg
 
+      # check if seed node is up
       nc -z -v -w5 10.8.0.3 22
       while [ $? -ne 0 ]
       do
@@ -493,33 +493,46 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
           nc -z -v -w5 10.8.0.3 22
       done
     
-
       # Seed 0
 
-      su - ubuntu
-    
+  su - ubuntu
+  #
   sleep 60s
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars "host=CASSANDRA_SEED_0"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars "host=CASSANDRA_SEED_0"
-  #ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_SEED_0"
-  #ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_0 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seed0_seeds public_ips=$public_ips opscip=$opscip"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_SEED_0"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_0 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seed0_seeds public_ips=$public_ips opscip=$opscip"
 
       # Seed 1
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars \"host=CASSANDRA_SEED_1\""
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars \"host=CASSANDRA_SEED_1\""
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars \"host=CASSANDRA_SEED_1\""
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars \"host=CASSANDRA_SEED_1 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip\""
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars "host=CASSANDRA_SEED_1"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars "host=CASSANDRA_SEED_1"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_SEED_1"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_1 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
 
       # Non Seed Nodes
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars \"host=CASSANDRA_NON_SEED_NODES\""
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars \"host=CASSANDRA_NON_SEED_NODES\""
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars \"host=CASSANDRA_NON_SEED_NODES\""
-      #sudo -H -u ubuntu bash -c "ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars \"host=CASSANDRA_NON_SEED_NODES disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip\""
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars  "host=CASSANDRA_NON_SEED_NODES"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
 
-      
+  # OpsCenter
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/opscenter-install.yml --extra-vars "seeds=$seeds cluster_name=$cluster_name"
+  
+  # check if nodes are  up
+  echo "********** devops_vm_script  check nodes **********" >> /var/log/syslog
+  
+  nc -z -v -w5 10.8.0.5 9042
+  while [ $? -ne 0 ]
+  do  
+    sleep 5s
+    nc -z -v -w5 10.8.0.5 9042
+  done
 
-      # Cleanup
-      # Cleanup
+  echo "********** devops_vm_script  check nodes done **********" >> /var/log/syslog
+  
+
+
+# Cleanup
       #gsutil rm gs://$deployment_bucket/*  
       #rm /home/cassandra/*.yml    
       #rm /home/ubuntu/.ssh/id_rsa.pub
@@ -678,7 +691,7 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
          'properties': {
              'timeout': cassandra_timeout,
              'waiterDependsOn': [
-                 cassandra_seed_0_vm_name
+                 cassandra_non_seed_igm
              ]
          }
       },
