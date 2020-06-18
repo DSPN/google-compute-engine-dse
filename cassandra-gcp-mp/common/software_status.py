@@ -52,7 +52,7 @@ import yaml
 
 RTC_ENDPOINT = 'https://runtimeconfig.googleapis.com/v1beta1'
 STATUS_PATH = 'status'
-DEFAULT_TIMEOUT = '1900'  #  minutes
+DEFAULT_TIMEOUT = '1800'  #  minutes
 DEFAULT_SUCCESS_NUMBER = 1
 DEFAULT_FAILURE_NUMBER = 1
 

@@ -168,14 +168,14 @@ def GenerateConfig(context):
   # Check Cassandra cluster ready script
   check_cassandra_cluster_ready_script= '''
   #!/usr/bin/env bash
-  #sudo echo "********** check_cassandra_cluster_ready_script **********" >> /var/log/syslog
-  #cluster_size=''' + cluster_size + '''
-  #size=`/usr/share/dse/bin/nodetool status | grep -o 'UN' | wc -l`
-  #if [ $size -ne $cluster_size ]; then
-  #   echo The Current Cassandra cluster size is $size
-  #   echo Cassandra cluster size has not reached $cluster_size yet
-  #   exit 1
-  #fi
+  sudo echo "********** check_cassandra_cluster_ready_script **********" >> /var/log/syslog
+  cluster_size=''' + cluster_size + '''
+  size=`/usr/share/dse/bin/nodetool status | grep -o 'UN' | wc -l`
+  if [ $size -ne $cluster_size ]; then
+     echo The Current Cassandra cluster size is $size
+     echo Cassandra cluster size has not reached $cluster_size yet
+     exit 1
+  fi
   exit 0
   '''
 
@@ -185,6 +185,13 @@ def GenerateConfig(context):
       #!/usr/bin/env bash
 
     sudo chmod -R ug+w /home/dse
+
+    # If Cassandra is already installed, do nothing
+      systemctl is-enabled cassandra
+      retVal=$?
+      if [ $retVal -eq 0 ]; then
+        exit 0
+      fi
 
     ## Download binaries
       pushd /home/dse
@@ -216,12 +223,6 @@ def GenerateConfig(context):
 
       popd
      
-      # If Cassandra is already installed, do nothing
-      systemctl is-enabled cassandra
-      retVal=$?
-      if [ $retVal -eq 0 ]; then
-        exit 0
-      fi
 
       # Ansible-way
       deployment_bucket=''' + deployment_bucket + '''
@@ -235,27 +236,8 @@ def GenerateConfig(context):
       cat /home/ubuntu/.ssh/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys
       chown -R ubuntu:ubuntu /home/ubuntu/.ssh
       chown ubuntu:ubuntu /home/ubuntu/.ssh/*
-
-      # Ansible ready to run
-      #pushd ~cassandra
-     # echo go_ansible > go_ansible
-      #gsutil cp ./go_ansible gs://$deployment_bucket/
-      #while [ $? -ne 0 ]
-      #do
-      #    sleep 5s
-       #   gsutil cp ./go_ansible gs://$deployment_bucket/
-      #done
-
       
-      # then clean up the deployment bucket
-      cluster_size=''' + cluster_size + '''
-      #size=`/usr/share/dse/bin/nodetool status | grep -o 'UN' | wc -l`
-      #while [ $size -lt $cluster_size ]; do
-      #    echo The Current Cassandra cluster size is $size
-      #    echo Keep looping until the Cassandra cluster size reaches $cluster_size
-      #    sleep 10s
-      #    size=`/usr/share/dse/bin/nodetool status | grep -o 'UN' | wc -l`
-      #done
+     
 
       
       '''
@@ -265,6 +247,13 @@ def GenerateConfig(context):
       #!/usr/bin/env bash
       
       sudo chmod -R ug+w /home/dse
+
+      # If Cassandra is already installed, do nothing
+      systemctl is-enabled cassandra
+      retVal=$?
+      if [ $retVal -eq 0 ]; then
+        exit 0
+      fi
 
       ## Install binary
       pushd /home/dse
@@ -316,28 +305,23 @@ def GenerateConfig(context):
       chown -R ubuntu:ubuntu /home/ubuntu/.ssh
       chown ubuntu:ubuntu /home/ubuntu/.ssh/*
 
-      # Configure Stackdriver logging configuration for Cassandra
-      #deployment=''' + deployment + '''
-      #GOOGLE_FLUENTD_CASSANDRA_CONF="/etc/google-fluentd/config.d/cassandra.conf"
-      #mv $GOOGLE_FLUENTD_CASSANDRA_CONF $GOOGLE_FLUENTD_CASSANDRA_CONF.orig
-      #cat $GOOGLE_FLUENTD_CASSANDRA_CONF.orig \
-      #| sed -e "s#/var/log/cassandra/system.log#/usr/share/cassandra/logs/system.log#" \
-      #| sed -e "s#tag cassandra#tag $deployment#" \
-      #> $GOOGLE_FLUENTD_CASSANDRA_CONF
-      #service google-fluentd restart
-      #popd
 
       # Cleanup
-      #rm /home/ubuntu/.ssh/id_rsa.pub
-      # TODO:
-      # change to /home/dse
-      rm /home/cassandra/*.yml
-      #mv /home/ubuntu/.ssh/authorized_keys.bak /home/ubuntu/.ssh/authorized_keys
+      
       '''
 
   # Cassandra non-seed nodes startup script
   cassandra_non_seed_script = '''
       #!/usr/bin/env bash
+
+
+      # If Cassandra is already installed, do nothing
+      systemctl is-enabled cassandra
+      retVal=$?
+      if [ $retVal -eq 0 ]; then
+        exit 0
+      fi
+
       sudo echo "********** cassandra_non_seed_script **********" >> /var/log/syslog
 
       sudo chmod -R ug+w /home/dse
@@ -375,12 +359,6 @@ sudo echo "********** dse agent downloaded **********" >> /var/log/syslog
       
       popd
          
-      # If Cassandra is already installed, do nothing
-      #systemctl is-enabled cassandra
-      #retVal=$?
-      #if [ $retVal -eq 0 ]; then
-      #  exit 0
-      #fi
 
       # Ansible-way
       deployment_bucket=''' + deployment_bucket + '''
@@ -398,11 +376,7 @@ sudo echo "********** dse agent downloaded **********" >> /var/log/syslog
 sudo echo "********** ssh keys added  **********" >> /var/log/syslog
 
       # Cleanup
-      #rm /home/ubuntu/.ssh/id_rsa.pub
-      # TODO
-      # change to /home/dse
-      #rm /home/cassandra/*.yml
-      #mv /home/ubuntu/.ssh/authorized_keys.bak /home/ubuntu/.ssh/authorized_keys
+      
       '''
  
   devops_vm_script = '''
@@ -458,7 +432,6 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
       cd /home/dse
       popd
 
-      
 
       cluster_name=''' + cluster_name + '''
       dc_name=''' + dc_name + '''
@@ -510,13 +483,19 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_1 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
 
       # Non Seed Nodes
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars  "host=CASSANDRA_NON_SEED_NODES"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml -f 30 --extra-vars  "host=CASSANDRA_NON_SEED_NODES"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
 
   # OpsCenter
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/opscenter-install.yml --extra-vars "seeds=$seeds cluster_name=$cluster_name"
+  
+
+  # Remove keys
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_SEED_0"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_SEED_1"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
   
   # check if nodes are  up
   echo "********** devops_vm_script  check nodes **********" >> /var/log/syslog
@@ -524,26 +503,22 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
   nc -z -v -w5 10.8.0.5 9042
   while [ $? -ne 0 ]
   do  
+    echo "********** devops_vm_script  check nodes port not open **********" >> /var/log/syslog
     sleep 5s
     nc -z -v -w5 10.8.0.5 9042
   done
 
   echo "********** devops_vm_script  check nodes done **********" >> /var/log/syslog
+
+
+  # Cleanup
   
-
-
-# Cleanup
-      #gsutil rm gs://$deployment_bucket/*  
-      #rm /home/cassandra/*.yml    
-      #rm /home/ubuntu/.ssh/id_rsa.pub
-      #mv /home/ubuntu/.ssh/authorized_keys.bak /home/ubuntu/.ssh/authorized_keys
-      #rm /home/ubuntu/.ssh/id_rsa.pub
-      #rm /home/cassandra/*.yml
-      #rm /home/cassandra/keygen.sh
-      #rm /home/cassandra/apache-cassandra-3.11.5-bin.tar.gz
-      #rm /home/cassandra/._apache-cassandra-3.11.5-bin.tar.gz
-      #rm /home/cassandra/ansible-hosts.cfg
-      #rm /home/cassandra/cassandra.service
+  #mv /home/ubuntu/.ssh/authorized_keys.bak /home/ubuntu/.ssh/authorized_keys 
+  #rm /home/dse/*.yml   
+  #rm /home/dse/*.cfg
+  rm /home/dse/*.gz 
+  gsutil rm gs://$deployment_bucket/* 
+     
   
       '''
 
@@ -691,7 +666,8 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
          'properties': {
              'timeout': cassandra_timeout,
              'waiterDependsOn': [
-                 cassandra_non_seed_igm
+                 cassandra_seed_0_vm_name
+
              ]
          }
       },
