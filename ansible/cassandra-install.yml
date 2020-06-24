@@ -41,7 +41,7 @@
          mode: '0755'
     - name: Unarchive DSE tarball
       unarchive:
-        src: /home/dse/dse-6.8.0-bin.tar.gz
+        src: /home/dse/dse-6.8.1-bin.tar.gz
         remote_src: yes
         dest: /usr/share/dse
         creates: /usr/share/dse/resources/cassandra/conf/cassandra.yaml

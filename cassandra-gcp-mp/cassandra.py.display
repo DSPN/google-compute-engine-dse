@@ -93,6 +93,11 @@ input:
       tooltip: Number of Cassandra nodes.
       subtext: Maximum supported number of Cassandra nodes is 32
       section: nodes
+    - name: dseVersion
+      title: Version of DSE 5 or 6.
+      tooltip: Select 5.1.18 or 6.8.1.
+      subtext: This is the DSE Version
+      section: nodes
     - name: machineType
       title: Machine Type for Cassandra nodes
       tooltip: Machine Type to provision for Cassandra nodes
@@ -120,6 +125,8 @@ runtime:
         value: '{{ outputs().clusterName }}'
       - label: Cassandra Cluster Size
         value: '{{ outputs().clusterSize }}'
+      - label: Cassandra Version
+        value: '{{ outputs().dseVersion }}'
       - label: Cassandra Datacenter Name
         value: '{{ outputs().dcName }}'
       - label: DevOps VM Public IP

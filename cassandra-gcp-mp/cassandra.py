@@ -49,6 +49,7 @@ def GenerateConfig(context):
   cassandraSku = "cassandra-68"
   gcp_region = context.properties['region']
   cluster_size = str(context.properties['clusterSize'])
+  dse_version = str(context.properties['dseVersion'])
   disk_size = str(context.properties['dataDiskSize'])
   
   # GCP Instance Templates
@@ -195,12 +196,12 @@ def GenerateConfig(context):
 
     ## Download binaries
       pushd /home/dse
-      gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+      gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
       
       while [ $? -ne 0 ]
       do
           sleep 10s
-          gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
       
       done
 
@@ -257,12 +258,12 @@ def GenerateConfig(context):
 
       ## Install binary
       pushd /home/dse
-      gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+      gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
       
       while [ $? -ne 0 ]
       do
           sleep 10s
-          gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
       
       done
 
@@ -328,12 +329,12 @@ def GenerateConfig(context):
       chown -R ubuntu:ubuntu /home/ubuntu/.ssh
       ## Install binary
       pushd /home/dse
-      gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+      gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
       
       while [ $? -ne 0 ]
       do
           sleep 10s
-          gsutil cp gs://dse-opsc-vm-components/dse-6.8.0-bin.tar.gz /home/dse
+          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
       
       done
 
@@ -493,22 +494,22 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
   
 
   # Remove keys
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_SEED_0"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_SEED_1"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
+  #ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_SEED_0"
+  #ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_SEED_1"
+  #ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-removekeys.yml --extra-vars "host=CASSANDRA_NON_SEED_NODES"
   
   # check if nodes are  up
-  echo "********** devops_vm_script  check nodes **********" >> /var/log/syslog
+  #echo "********** devops_vm_script  check nodes **********" >> /var/log/syslog
   
-  nc -z -v -w5 10.8.0.5 9042
-  while [ $? -ne 0 ]
-  do  
-    echo "********** devops_vm_script  check nodes port not open **********" >> /var/log/syslog
-    sleep 5s
-    nc -z -v -w5 10.8.0.5 9042
-  done
+  #nc -z -v -w5 10.8.0.5 9042
+  #while [ $? -ne 0 ]
+  #do  
+  #  echo "********** devops_vm_script  check nodes port not open **********" >> /var/log/syslog
+  #  sleep 5s
+  #  nc -z -v -w5 10.8.0.5 9042
+  #done
 
-  echo "********** devops_vm_script  check nodes done **********" >> /var/log/syslog
+  #echo "********** devops_vm_script  check nodes done **********" >> /var/log/syslog
 
 
   # Cleanup

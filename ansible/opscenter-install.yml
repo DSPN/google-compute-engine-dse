@@ -20,7 +20,7 @@
          mode: '0755'
      - name: Unarchive OPSC tarball
        unarchive:
-        src: /home/dse/opscenter-6.7.7.tar.gz
+        src: /home/dse/opscenter-6.8.0.tar.gz
         dest: /home/dse/opscenter
         extra_opts:
         - --strip-components=1

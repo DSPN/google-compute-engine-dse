@@ -11,6 +11,7 @@ required:
 - region
 - clusterName
 - clusterSize
+- dseVersion
 - dcName
 - machineType
 - dataDiskSize
@@ -67,6 +68,13 @@ properties:
       - 31
       - 32 
 
+  dseVersion:
+    type: string
+    default: 6.8.1 
+    enum:
+      - 6.8.1
+      - 5.1.18
+
   dcName:
     type: string
     default: dc0
@@ -102,4 +110,6 @@ outputs:
   region:
   type: string
   clusterName:
+  type: string
+  dseVersion:
   type: string 
