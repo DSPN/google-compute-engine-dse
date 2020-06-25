@@ -157,6 +157,7 @@ def GenerateConfig(context):
   cluster_name = context.properties['clusterName']
   cluster_size = str(context.properties['clusterSize'])
   dc_name = context.properties['dcName']
+  dse_version = context.properties['dseVersion']
   public_ips = str(context.properties['extIP'])
 
   # 1800 seconds for solution deployment timeout
@@ -187,6 +188,8 @@ def GenerateConfig(context):
 
     sudo chmod -R ug+w /home/dse
 
+    sudo echo "********** cassandra_seed_0_script **********" >> /var/log/syslog
+
     # If Cassandra is already installed, do nothing
       systemctl is-enabled cassandra
       retVal=$?
@@ -194,14 +197,26 @@ def GenerateConfig(context):
         exit 0
       fi
 
+ 
+    dse_version=''' + dse_version + '''
+    sudo echo "********** dse_version ********** "+$dse_version >> /var/log/syslog
+
     ## Download binaries
       pushd /home/dse
-      gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+      if [ "$dse_version" = "6.8.1" ]; then
+          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+      else
+          gsutil cp gs://dse-opsc-vm-components/dse-5.1.18-bin.tar.gz /home/dse
+      fi
       
       while [ $? -ne 0 ]
       do
           sleep 10s
-          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+          if [ "$dse_version" = "6.8.1" ]; then
+              gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+          else
+              gsutil cp gs://dse-opsc-vm-components/dse-5.1.18-bin.tar.gz /home/dse
+          fi
       
       done
 
@@ -256,14 +271,24 @@ def GenerateConfig(context):
         exit 0
       fi
 
+      dse_version=''' + dse_version + '''
+
       ## Install binary
       pushd /home/dse
-      gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+      if [ "$dse_version" = "6.8.1" ]; then
+          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+      else
+          gsutil cp gs://dse-opsc-vm-components/dse-5.1.18-bin.tar.gz /home/dse
+      fi
       
       while [ $? -ne 0 ]
       do
           sleep 10s
-          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+          if [ "$dse_version" = "6.8.1" ]; then
+             gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+          else
+             gsutil cp gs://dse-opsc-vm-components/dse-5.1.18-bin.tar.gz /home/dse
+          fi
       
       done
 
@@ -327,14 +352,24 @@ def GenerateConfig(context):
 
       sudo chmod -R ug+w /home/dse
       chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+    
+      dse_version=''' + dse_version + '''
       ## Install binary
       pushd /home/dse
-      gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+      if [ "$dse_version" = "6.8.1" ]; then
+          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+      else
+          gsutil cp gs://dse-opsc-vm-components/dse-5.1.18-bin.tar.gz /home/dse
+      fi
       
       while [ $? -ne 0 ]
       do
           sleep 10s
-          gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+          if [ "$dse_version" = "6.8.1" ]; then
+              gsutil cp gs://dse-opsc-vm-components/dse-6.8.1-bin.tar.gz /home/dse
+          else
+              gsutil cp gs://dse-opsc-vm-components/dse-5.1.18-bin.tar.gz /home/dse
+          fi
       
       done
 
@@ -442,6 +477,7 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
       cluster_size=''' + cluster_size + '''
       public_ips=''' + public_ips + '''
       opscip=''' + opscip + '''
+      dse_version=''' + dse_version + '''
 
       # TODO 
       # 
@@ -475,19 +511,19 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars "host=CASSANDRA_SEED_0"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars "host=CASSANDRA_SEED_0"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_SEED_0"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_0 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seed0_seeds public_ips=$public_ips opscip=$opscip"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_0 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seed0_seeds public_ips=$public_ips opscip=$opscip dse_version=$dse_version"
 
       # Seed 1
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml --extra-vars "host=CASSANDRA_SEED_1"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml --extra-vars "host=CASSANDRA_SEED_1"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml --extra-vars "host=CASSANDRA_SEED_1"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_1 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml --extra-vars "host=CASSANDRA_SEED_1 disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip dse_version=$dse_version"
 
       # Non Seed Nodes
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/os-config.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/ebs-init.yml -f 30 --extra-vars  "host=CASSANDRA_NON_SEED_NODES"
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-directories.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES"
-  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip"
+  ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/cassandra-install.yml -f 30 --extra-vars "host=CASSANDRA_NON_SEED_NODES disksize=$disksize cluster_name=$cluster_name dc=$dc_name seeds=$seeds public_ips=$public_ips opscip=$opscip dse_version=$dse_version"
 
   # OpsCenter
   ansible-playbook -v -u ubuntu -i /home/dse/ansible-hosts.cfg --private-key /home/ubuntu/.ssh/id_rsa /home/dse/opscenter-install.yml --extra-vars "seeds=$seeds cluster_name=$cluster_name"

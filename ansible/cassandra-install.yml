@@ -9,6 +9,7 @@
     seeds: "{{ seeds }}"
     opscip: "{{ opscip }}"
     num_tokens: 64
+    dse_version: "{{ dse_version }}"
     compaction_throughput_mb_per_sec: 64
     zone: rack1
 
@@ -23,6 +24,8 @@
         msg: seed nodes {{ seeds }}
     - debug:
         msg: opscenter ip {{ opscip }}
+    - debug:
+        msg: dse version {{ dse_version }}
     - debug:
         msg: CREATE DIRECTORIES, SYMLINKS, UNTAR
     - name: Create DSE directory /usr/share/dse
@@ -41,7 +44,7 @@
          mode: '0755'
     - name: Unarchive DSE tarball
       unarchive:
-        src: /home/dse/dse-6.8.1-bin.tar.gz
+        src: /home/dse/dse-{{ dse_version }}-bin.tar.gz
         remote_src: yes
         dest: /usr/share/dse
         creates: /usr/share/dse/resources/cassandra/conf/cassandra.yaml
@@ -109,7 +112,6 @@
         - {regexp: "cluster_name: 'Test Cluster'", line: "cluster_name: '{{ cluster_name }}'"}
         - {regexp: 'listen_address: localhost', line: 'listen_address: {{ hostname.stdout }}'}
         - {regexp: "num_tokens: 256", line: "num_tokens: {{ num_tokens }}"}
-        - {regexp: "native_transport_address: localhost", line: "native_transport_address: {{ hostname.stdout }}"}
         - {regexp: "compaction_throughput_mb_per_sec: 16", line: "compaction_throughput_mb_per_sec: {{ compaction_throughput_mb_per_sec }}"}
         - {regexp: "trickle_fsync: false", line: "trickle_fsync: true"}
         - {regexp: "endpoint_snitch: com.datastax.bdp.snitch.DSESimpleSnitch", line: "endpoint_snitch: GossipingPropertyFileSnitch"} 
@@ -118,6 +120,12 @@
         path: /usr/share/dse/resources/cassandra/conf/cassandra.yaml
         line: "auto_bootstrap: false"
       when: service_file.stat.exists == False
+    - name: Add a line to cassandra.yaml for native_transport_address
+      lineinfile:
+        path: /usr/share/dse/resources/cassandra/conf/cassandra.yaml
+        regexp: "native_transport_address: localhost"
+        line: "native_transport_address: {{ hostname.stdout }}"
+      when: "'{{ dse_version }}' == '6.8.1'"
     - name: Add a line to cassandra.yaml for phi_convict_threshold
       lineinfile:
         path: /usr/share/dse/resources/cassandra/conf/cassandra.yaml
