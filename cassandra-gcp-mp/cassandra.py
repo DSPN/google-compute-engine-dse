@@ -181,6 +181,17 @@ def GenerateConfig(context):
   exit 0
   '''
 
+  # Check OPSC ready script
+  check_opsc_ready_script= '''
+  #!/usr/bin/env bash
+  sudo echo "********** check_opsc_ready_script **********" >> /var/log/syslog
+  nc -z -v -w5 10.8.0.2 8888
+  if [ $? -ne 0 ]; then
+      exit 1
+  fi
+  exit 0
+  '''
+
 
   # Cassandra seed node 0 startup script
   cassandra_seed_0_script = '''
@@ -712,8 +723,8 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
          'name': 'cassandra-software-status-script',
          'type': 'software_status_script.py',
          'properties': {
-             'initScript': cassandra_seed_0_script,
-             'checkScript': check_cassandra_cluster_ready_script
+             'initScript': devops_vm_script,
+             'checkScript': check_opsc_ready_script
          }
       },
       {

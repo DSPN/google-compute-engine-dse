@@ -126,6 +126,12 @@
         regexp: "native_transport_address: localhost"
         line: "native_transport_address: {{ hostname.stdout }}"
       when: "'{{ dse_version }}' == '6.8.1'"
+    - name: Add a line to cassandra.yaml for rpc_address
+      lineinfile:
+        path: /usr/share/dse/resources/cassandra/conf/cassandra.yaml
+        regexp: "rpc_address: localhost"
+        line: "rpc_address: {{ hostname.stdout }}"
+      when: "'{{ dse_version }}' == '5.1.18'"
     - name: Add a line to cassandra.yaml for phi_convict_threshold
       lineinfile:
         path: /usr/share/dse/resources/cassandra/conf/cassandra.yaml

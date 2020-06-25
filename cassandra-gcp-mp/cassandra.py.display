@@ -28,21 +28,21 @@ description:
     configurable number of nodes in a single GCP region. The Cassandra nodes use
     SSD based persistent disks to store data.
   architectureDiagram: '@media/datastax_diagram.png'
-  version: 6.8.0
+  version: 6.8.1 or 5.1.18
   documentations:
     - title: Getting started
-      url: 'https://github.com/DSPN/google-deployment-guide/blob/master/OSSLauncher.md'
-      description: Apache Cassandra™ deployment  on GCP marketplace
+      url: 'https://github.com/DSPN/google-deployment-guide/blob/master/cloudlauncher.md'
+      description: Datastax Cassandra™ deployment  on GCP marketplace
       destinations:
         - DESTINATION_SOLUTION_DETAILS
         - DESTINATION_POST_DEPLOY
-    - title: Apache Cassandra Documentation
-      url: 'https://docs.datastax.com/en/cassandra-oss/3.x/'
+    - title: Datastax Cassandra Documentation
+      url: 'https://www.datastax.com/blog/2020/04/whats-new-datastax-enterprise-68'
       destinations:
         - DESTINATION_SOLUTION_DETAILS
         - DESTINATION_POST_DEPLOY
     - title: Cassandra Support
-      url: 'https://luna.datastax.com'
+      url: 'https://support.datastax.com'
       destinations:
         - DESTINATION_SOLUTION_DETAILS
         - DESTINATION_POST_DEPLOY
@@ -52,7 +52,7 @@ description:
         - DESTINATION_SOLUTION_DETAILS
         - DESTINATION_POST_DEPLOY
     - title: CQL Primer
-      url: 'http://cassandra.apache.org/doc/latest/cql'
+      url: 'https://docs.datastax.com/en/cql-oss/3.3/cql/cql_reference/cqlReferenceTOC.html'
       destinations:
         - DESTINATION_SOLUTION_DETAILS
         - DESTINATION_POST_DEPLOY
@@ -62,12 +62,12 @@ description:
         - title: Ubuntu
           version: 18.04 LTS
     - software:
-        - title: Apache Cassandra
-          version: 3.11.5
+        - title: Datastax Enterprise
+          version: 6.8.1 or 5.1.18
   support:
     - title: Support
       descriptionHtml: >-
-        For support, go to <a href="https://luna.datastax.com/"
+        For support, go to <a href="https://support.datastax.com/"
         target="_blank">here</a>
       showSupportId: false
 input:
@@ -147,16 +147,16 @@ runtime:
     - heading: Register for Support
       description: >-
         In order to receive support from DataStax, go to the link <a
-        href="https://luna.datastax.com/" target="_blank">here</a>.
+        href="https://support.datastax.com/" target="_blank">here</a>.
     - heading: Database tools
       description: >-
         The Cassandra nodes each have the database and associated tools
         installed. Find your Cassandra node virtual machine(s) inside GCP
         console and use the SSH button to ssh into the node(s) and begin
         exploring tools like <a
-        href="http://cassandra.apache.org/doc/3.11.3/tools/cqlsh.html">cqlsh</a>
+        href="https://docs.datastax.com/en/cql-oss/3.3/cql/cql_reference/cqlReferenceTOC.html">cqlsh</a>
         and <a
-        href="http://cassandra.apache.org/doc/latest/tools/nodetool/nodetool.html">nodetool</a>.
+        href="https://docs.datastax.com/en/dse/6.8/dse-admin/datastax_enterprise/tools/nodetool/toolsNodetool.html">nodetool</a>.
     - heading: Tutorials
       description: >-
         Getting started tutorials and online courses are available at <a
