@@ -22,12 +22,12 @@ description:
 
 
      For more on support, visit www.datastax.com and follow us on @DataStax.
-  logo: '@media/cassandra.png'
+  logo: '@media/datastax.png'
   architectureDescription: >-
     The DSE deployment creates a Cassandra cluster with a
     configurable number of nodes in a single GCP region. The Cassandra nodes use
     SSD based persistent disks to store data.
-  architectureDiagram: '@media/datastax_diagram.png'
+  architectureDiagram: '@media/multidc.png'
   version: 6.8.1 or 5.1.18
   documentations:
     - title: Getting started
