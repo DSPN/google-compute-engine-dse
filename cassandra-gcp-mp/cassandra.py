@@ -239,10 +239,34 @@ def GenerateConfig(context):
           gsutil cp gs://dse-opsc-vm-components/datastax-agent-6.8.0.tar.gz /home/dse
       
       done
+
       gsutil cp gs://dse-opsc-vm-components/cassandra.service /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/cassandra.service /home/dse
+      done
+
       gsutil cp gs://dse-opsc-vm-components/cassconf /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/cassconf /home/dse
+      done
       gsutil cp gs://dse-opsc-vm-components/start-cassandra /home/dse
+
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/start-cassandra /home/dse
+      done
+
       gsutil cp gs://dse-opsc-vm-components/stop-cassandra /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/stop-cassandra /home/dse
+      done
 
       cd /usr/share
       mkdir dse
@@ -311,10 +335,34 @@ def GenerateConfig(context):
           gsutil cp gs://dse-opsc-vm-components/datastax-agent-6.8.0.tar.gz /home/dse
       
       done
+
       gsutil cp gs://dse-opsc-vm-components/cassandra.service /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/cassandra.service /home/dse
+      done
+
       gsutil cp gs://dse-opsc-vm-components/cassconf /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/cassconf /home/dse
+      done
       gsutil cp gs://dse-opsc-vm-components/start-cassandra /home/dse
+
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/start-cassandra /home/dse
+      done
+
       gsutil cp gs://dse-opsc-vm-components/stop-cassandra /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/stop-cassandra /home/dse
+      done
       
 
       cd /usr/share
@@ -394,10 +442,34 @@ def GenerateConfig(context):
           gsutil cp gs://dse-opsc-vm-components/datastax-agent-6.8.0.tar.gz /home/dse
       
       done
+
       gsutil cp gs://dse-opsc-vm-components/cassandra.service /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/cassandra.service /home/dse
+      done
+
       gsutil cp gs://dse-opsc-vm-components/cassconf /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/cassconf /home/dse
+      done
       gsutil cp gs://dse-opsc-vm-components/start-cassandra /home/dse
+
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/start-cassandra /home/dse
+      done
+
       gsutil cp gs://dse-opsc-vm-components/stop-cassandra /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 5s
+          gsutil cp gs://dse-opsc-vm-components/stop-cassandra /home/dse
+      done
 
 sudo echo "********** dse agent downloaded **********" >> /var/log/syslog
       
@@ -472,8 +544,14 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
           gsutil cp gs://dse-opsc-vm-components/*.yml /home/dse
       
       done
+
       gsutil cp gs://dse-opsc-vm-components/ansible-hosts.cfg /home/dse
-      gsutil cp gs://dse-opsc-vm-components/ansible.cfg /home/dse
+      while [ $? -ne 0 ]
+      do
+          sleep 10s
+          gsutil cp gs://dse-opsc-vm-components/ansible-hosts.cfg /home/dse
+          gsutil cp gs://dse-opsc-vm-components/ansible.cfg /home/dse
+      done
       
 
       cd /home/dse
@@ -723,8 +801,8 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
          'name': 'cassandra-software-status-script',
          'type': 'software_status_script.py',
          'properties': {
-             'initScript': devops_vm_script,
-             'checkScript': check_opsc_ready_script
+             'initScript': cassandra_seed_0_script,
+             'checkScript': check_cassandra_cluster_ready_script
          }
       },
       {
