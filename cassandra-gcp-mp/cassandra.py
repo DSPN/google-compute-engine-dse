@@ -40,7 +40,7 @@ def GenerateConfig(context):
   }
   
   cassandraSkuImageMap = {
-    "cassandra-68" : "datastax-public/global/images/dse-68-vm",
+    "cassandra-68" : "datastax-public/global/images/dse-ent-68-vm",
   }
 
   deployment = context.env['deployment']
@@ -1007,7 +1007,7 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
                       'autoDelete': True, 
                       'initializeParams': {
                           'sourceImage':
-                              URL_BASE + 'datastax-public/global/images/dse-68-vm',
+                              URL_BASE + 'datastax-public/global/images/dse-ent-68-vm',
                           'diskType': dev_ops_vm_disk_type
                       }
             }],
@@ -1072,6 +1072,10 @@ sudo echo "********** ssh keys added  **********" >> /var/log/syslog
         {
             'name': 'clusterSize',
             'value': cluster_size
+        },
+        {
+            'name': 'dseVersion',
+            'value': dse_version
         },
         {
             'name': 'dcName',

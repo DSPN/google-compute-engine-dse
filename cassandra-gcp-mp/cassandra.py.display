@@ -1,24 +1,24 @@
 metadataVersion: v1
 description:
   title: Datastax Enterprise for GCP
-  tagline: 'The massively scalable, active-everywhere, open-source NoSQL'
+  tagline: 'The always-on, distributed hybrid cloud database'
   url: 'https://www.datastax.com'
   author:
     shortDescription: >-
-      The massively scalable, active-everywhere, open-source NoSQL database, deployed on
+      The massively scalable, active-everywhere, hybrid NoSQL database, deployed on
       GCP with support available from DataStax
     title: DataStax
     url: 'http://datastax.com'
   descriptionHtml: >-
-    Datastax Enterprise (DSE) is the open-source, massively scalable, active-everywhere
+    Datastax Enterprise (DSE) is the hybrid, massively scalable, active-everywhere
     NoSQL database used by the internet’s largest applications. Cassandra is the
     only NoSQL database with a masterless architecture enabling zero downtime,
-    zero lock-in, and global scale for data sovereignty.  
+    and global scale for data sovereignty.  
 
 
     DSE™ for GCP gives users and enterprises a simple deployment
     process based on cloud best practices to quickly install a DSE
-    cluster on GCP  in a single region across multiple fault domains.
+    cluster on GCP  in a single region across multiple zones.
 
 
      For more on support, visit www.datastax.com and follow us on @DataStax.
@@ -41,7 +41,7 @@ description:
       destinations:
         - DESTINATION_SOLUTION_DETAILS
         - DESTINATION_POST_DEPLOY
-    - title: Cassandra Support
+    - title: Datastax Cassandra Support
       url: 'https://support.datastax.com'
       destinations:
         - DESTINATION_SOLUTION_DETAILS
@@ -65,9 +65,9 @@ description:
         - title: Datastax Enterprise
           version: 6.8.1 or 5.1.18
   support:
-    - title: Support
+    - title: Partner Architecture Support
       descriptionHtml: >-
-        For support, go to <a href="https://support.datastax.com/"
+        For support, email partner-architecture@datastax.com or go to <a href="https://support.datastax.com/"
         target="_blank">here</a>
       showSupportId: false
 input:
@@ -129,12 +129,12 @@ runtime:
         value: '{{ outputs().dseVersion }}'
       - label: Cassandra Datacenter Name
         value: '{{ outputs().dcName }}'
-      - label: DevOps VM Public IP
+      - label: Opscenter Public IP
         value: '{{ outputs().devOpsExtIP }}'
-      - label: DevOps VM web portal
+      - label: Opscenter Console
         value: >-
-          <a href="http://{{ outputs().devOpsExtIP }}:8080/">http://{{
-          outputs().devOpsExtIP }}:8080/</a>
+          <a href="http://{{ outputs().devOpsExtIP }}:8888/">http://{{
+          outputs().devOpsExtIP }}:8888/</a>
   primaryButton:
     type: TYPE_GCE_VM_SSH
     label: SSH to DevOps VM
