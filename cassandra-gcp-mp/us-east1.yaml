@@ -19,7 +19,7 @@ resources:
   type: cassandra.py
   properties:
     # Must match the GCP region of the existing OSS cluster
-    gcp_region: us-west1
+    gcp_region: us-east4
     # Must match the name of the existing OSS cluster
     clusterName: dse_cluster
     # Must match the size of the existing OSS cluster
