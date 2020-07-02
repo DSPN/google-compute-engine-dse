@@ -3,3 +3,6 @@
 
 # PyCharm files
 *.idea
+
+# VS Code settings
+/.vscode/
