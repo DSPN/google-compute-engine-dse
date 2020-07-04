@@ -1,0 +1,22 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Call Jenkins Job') {
+            steps {
+                build job:'GCP/GCP-DEPLOY' , parameters:[
+                    string(name: 'GitCredentialsId', value: 'raks100'),
+                    string(name: 'GitRepoName', value: "google-compute-engine-dse"),
+                    string(name: 'gcloudCredentialsId', value: '5dcddfb5-9f2f-41b2-b766-9f7136962cce'),
+                    string(name: 'gcpregion', value: 'us-east1'),
+                    booleanParam(name: 'RunNoSqlBench', value: true),
+                    string(name: 'CQL_Smoke_Test_Script', value: 'cql_smoke_dse.sh'),
+                    booleanParam(name: 'DeleteStack', value: true),
+                    string(name: 'AWSCredentialsId', value: 'raks.krishna@datastax.com')
+                ]
+            }
+        }
+    }
+}
